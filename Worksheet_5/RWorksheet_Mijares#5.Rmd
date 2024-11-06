@@ -17,12 +17,6 @@ library(polite)
 
 url <- 'https://www.imdb.com/chart/toptv'
 
-page <- read_html(url)
-
-tv_list2 <- page %>% html_nodes('.ipc-title__text') %>% html_text()
-
-length(tv_list2)
-
 
 session <- bow(url, user_agent = "Educational")
 
@@ -32,19 +26,23 @@ tv_list <- character(0)
 links <- character(0)
 
 ```
+
 ```{r}
 tv_list <- read_html(url) %>% html_nodes('.ipc-title__text') %>% html_text
 
-tv_list_sub <- as.data.frame(tv_list[2:26])
-
-length(tv_list)
+tv_list_sub <- as.data.frame(tv_list[2:28])
 
 head(tv_list_sub,50)
 
-##tv_list2 <- read_html(url) %>% html_nodes('<h3.ipc-title__text') %>% html_text
+colnames(tv_list_sub) <- "ranks"
 
-##tv_list2 <- as.data.frame(tv_list2[27:50])
+splitDf <- strsplit(as.character(tv_list_sub$ranks),".",fixed = TRUE)
+splitDf <- data.frame(do.call(rbind,splitDf))
 
-##tv_list2
+splitDf <- splitDf[-c(3:4)]
+
+colnames(splitDf) <- c("ranks", "title")
+
+str(splitDf)
 ```
 
