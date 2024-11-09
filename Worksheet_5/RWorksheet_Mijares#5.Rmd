@@ -14,35 +14,76 @@ library(rvest)
 library(httr)
 library(dplyr)
 library(polite)
+library(kableExtra)
+library(stringr)
+
 
 url <- 'https://www.imdb.com/chart/toptv'
 
+page <- read_html(url)
 
 session <- bow(url, user_agent = "Educational")
 
 session
+```
+```{r}
+name <- page %>% html_nodes(".ipc-title__text") %>% html_text()
+name1 <- name[!grepl("Top 250 TV Shows|IMDb Charts|Recently viewed|More to explore", name, ignore.case = TRUE)]
+name1
+```
+```{r}
+rank <- str_extract(name1, "^\\d+\\.")
+rank
+```
 
-tv_list <- character(0)
-links <- character(0)
 
+```{r}
+title <- str_replace(name, "^\\d+\\.", "")
+title
+```
+
+
+```{r}
+year = page %>% html_nodes(".sc-5bc66c50-6.OOdsw.cli-title-metadata-item") %>% html_text()
+years <- str_extract_all(year, "\\b\\d{4}(?:–\\d{4})?\\b") %>% unlist()
+years
+```
+
+
+```{r}
+ratings = page %>% html_nodes(".ipc-rating-star--rating") %>% html_text()
+ratings
+```
+
+
+```{r}
+episode <- page %>% html_nodes(".sc-5bc66c50-6.OOdsw.cli-title-metadata-item") %>%
+html_text()
+episodes <- str_extract_all(episode, "\\b\\d+ eps\\b") %>% unlist()
+episodes
 ```
 
 ```{r}
-tv_list <- read_html(url) %>% html_nodes('.ipc-title__text') %>% html_text
+votes = page %>% html_nodes(".ipc-rating-star--voteCount") %>% html_text()
+votes
+```
+```{r}
+max_length <- max(length(rank), length(title), length(year), length(ratings), length(episodes), length(votes))
+rank <- c(rank, rep(NA, max_length - length(rank)))
+title <- c(title, rep(NA, max_length - length(title)))
+year <- c(year, rep(NA, max_length - length(year)))
+ratings <- c(ratings, rep(NA, max_length - length(ratings)))
+episodes <- c(episodes, rep(NA, max_length - length(episodes)))
+vote <- c(vote, rep(NA, max_length - length(vote)))
+max_length
+```
+```{r}
+movies = data.frame(rank, title, year, ratings, episodes, vote, stringsAsFactors = FALSE)
 
-tv_list_sub <- as.data.frame(tv_list[2:28])
+head(movies,10)
 
-head(tv_list_sub,50)
-
-colnames(tv_list_sub) <- "ranks"
-
-splitDf <- strsplit(as.character(tv_list_sub$ranks),".",fixed = TRUE)
-splitDf <- data.frame(do.call(rbind,splitDf))
-
-splitDf <- splitDf[-c(3:4)]
-
-colnames(splitDf) <- c("ranks", "title")
-
-str(splitDf)
+movies %>%
+  kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
 ```
 
