@@ -68,22 +68,101 @@ votes = page %>% html_nodes(".ipc-rating-star--voteCount") %>% html_text()
 votes
 ```
 ```{r}
-max_length <- max(length(rank), length(title), length(year), length(ratings), length(episodes), length(votes))
+urls <- c("https://www.imdb.com/title/tt0903747/?ref_=chttvtp_i_1", 
+          "https://www.imdb.com/title/tt5491994/?ref_=chttvtp_i_2",
+          "https://www.imdb.com/title/tt0795176/?ref_=chttvtp_i_3",
+          "https://www.imdb.com/title/tt0185906/?ref_=chttvtp_i_4",
+          "https://www.imdb.com/title/tt7366338/?ref_=chttvtp_i_5",
+          "https://www.imdb.com/title/tt0306414/?ref_=chttvtp_i_6",
+          "https://www.imdb.com/title/tt0417299/?ref_=chttvtp_i_7",
+          "https://www.imdb.com/title/tt6769208/?ref_=chttvtp_i_8",
+          "https://www.imdb.com/title/tt0141842/?ref_=chttvtp_i_9",
+          "https://www.imdb.com/title/tt2395695/?ref_=chttvtp_i_10",
+          "https://www.imdb.com/title/tt0081846/?ref_=chttvtp_i_11",
+          "https://www.imdb.com/title/tt9253866/?ref_=chttvtp_i_12",
+          "https://www.imdb.com/title/tt0944947/?ref_=chttvtp_i_13",
+          "https://www.imdb.com/title/tt7678620/?ref_=chttvtp_i_14",
+          "https://www.imdb.com/title/tt0071075/?ref_=chttvtp_i_15",
+          "https://www.imdb.com/title/tt1355642/?ref_=chttvtp_i_16",
+          "https://www.imdb.com/title/tt2861424/?ref_=chttvtp_i_17",
+          "https://www.imdb.com/title/tt1533395/?ref_=chttvtp_i_18",
+          "https://www.imdb.com/title/tt8420184/?ref_=chttvtp_i_19",
+          "https://www.imdb.com/title/tt0052520/?ref_=chttvtp_i_20",
+          "https://www.imdb.com/title/tt1877514/?ref_=chttvtp_i_21",
+          "https://www.imdb.com/title/tt1475582/?ref_=chttvtp_i_22",
+          "https://www.imdb.com/title/tt2560140/?ref_=chttvtp_i_23",
+          "https://www.imdb.com/title/tt0103359/?ref_=chttvtp_i_24",
+          "https://www.imdb.com/title/tt0386676/?ref_=chttvtp_i_25")
+
+userReviews <- vector("numeric", length(urls))
+critiqueReviews <- vector("numeric", length(urls))
+popularity <- vector("numeric", length(urls))
+```
+
+
+```{r}
+for (i in seq_along(urls)) {
+
+  session <- bow(urls[i], user_agent = "Educational")
+
+  webpage <- scrape(session)
+  
+  popularityText <- webpage %>% html_nodes(".sc-39d285cf-1.dxqvqi") %>% html_text()
+  popularity[i] <- as.numeric(gsub(",", "", popularityText[1]))
+  
+  reviews <- webpage %>% html_nodes(".score") %>% html_text()
+  
+
+  if (length(reviews) >= 2) {
+
+    userReviews[i] <- ifelse(grepl("K", reviews[1]), 
+                              as.numeric(gsub("K", "", reviews[1])) * 1000, 
+                              as.numeric(reviews[1]))
+    critiqueReviews[i] <- as.numeric(reviews[2])
+  } else {
+    userReviews[i] <- NA
+    critiqueReviews[i] <- NA
+  }
+}
+```
+
+
+```{r}
+userReviews
+
+critiqueReviews
+
+popularity
+```
+```{r}
+max_length <- max(length(rank), length(title), length(year), length(ratings), length(episodes), length(vote))
+
 rank <- c(rank, rep(NA, max_length - length(rank)))
+
 title <- c(title, rep(NA, max_length - length(title)))
-year <- c(year, rep(NA, max_length - length(year)))
+
+years <- c(years, rep(NA, max_length - length(years)))
+
 ratings <- c(ratings, rep(NA, max_length - length(ratings)))
+
 episodes <- c(episodes, rep(NA, max_length - length(episodes)))
-vote <- c(vote, rep(NA, max_length - length(vote)))
+
+votes <- c(votes, rep(NA, max_length - length(votes)))
+
+userReviews <- c(userReviews, rep(NA, max_length - length(userReviews)))
+
+critiqueReviews <- c(critiqueReviews, rep(NA, max_length - length(critiqueReviews)))
+
+popularity <- c(popularity, rep(NA, max_length - length(popularity)))
 max_length
 ```
 ```{r}
-movies = data.frame(rank, title, year, ratings, episodes, vote, stringsAsFactors = FALSE)
-
-head(movies,10)
-
+movies = data.frame(rank, title, years, ratings, episodes, votes, userReviews, critiqueReviews, popularity, stringsAsFactors = FALSE)
+```
+```{r}
+write.csv(movies, "movies.csv")
+print(head(movies))
 movies %>%
   kable("latex", booktabs = TRUE) %>%
   kable_styling(latex_options = "scale_down")
 ```
-
