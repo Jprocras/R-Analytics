@@ -293,13 +293,13 @@ theSopranos %>%
 ```{r}
 library(ggplot2)
 
-movies$year <- as.numeric(movies$years)
+movies$year <- as.numeric(movies$year)
 
 yearCount <- movies %>%
-  filter(!is.na(years)) %>%
-  count(years)
+  filter(!is.na(year)) %>%
+  count(year)
 
-ggplot(yearCount, aes(x = years, y = n)) +
+ggplot(yearCount, aes(x = year, y = n)) +
   geom_line(color = "brown") +
   geom_point(color = "black") +
   labs(title = "Number of TV Shows Released by Year",
@@ -310,3 +310,4 @@ ggplot(yearCount, aes(x = years, y = n)) +
 most_releases <- yearCount[which.max(yearCount$n), ]
 print(most_releases)
 ```
+
