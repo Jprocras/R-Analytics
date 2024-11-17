@@ -1,0 +1,307 @@
+---
+title: "RWorksheet_Mijares#5_group(Mijares_Compay_Mabalina).Rmd"
+author: "Mijares_Compay_Mabalina"
+date: "2024-11-17"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+No.4
+```{r}
+library(polite)
+library(kableExtra)
+library(rmarkdown)
+library(httr)
+library(rvest)
+library(dplyr)
+library(stringr)
+library(ggplot2)
+```
+
+```{r}
+url <-c('https://www.amazon.com/s?k=brush&crid=WBCV58QBQBM9&sprefix=brus%2Caps%2C407&ref=nb_sb_noss_2', 'https://www.amazon.com/s?k=canvas&crid=32UVOLYJWWMU0&sprefix=canva%2Caps%2C702&ref=nb_sb_noss_2', 'https://www.amazon.com/s?k=paint&crid=3QPZCQNMHYBRX&sprefix=pain%2Caps%2C586&ref=nb_sb_noss_2', 'https://www.amazon.com/s?k=ruler&crid=2U8K5JO8ILASM&sprefix=r%2Caps%2C679&ref=nb_sb_noss_2', 'https://www.amazon.com/s?k=pencil&crid=FIQ42K8IECS4&sprefix=penci%2Caps%2C432&ref=nb_sb_noss_2')
+
+productName <- vector("list", length(url))
+price <- vector("list", length(url))
+description <- vector("list", length(url))
+ratings <- vector("list", length(url))
+reviews <- vector("list", length(url))
+```
+
+```{r}
+dataFrame <- list()
+
+for (i in seq_along(url)) {
+    session <- bow(url[i], user_agent = "Educational")
+    webpage <- scrape(session)
+    
+    productName[[i]] <- webpage %>% html_nodes('.a-size-base-plus.a-color-base') %>% html_text() %>% head(30)
+    
+    price[[i]] <-  webpage %>%
+  html_nodes('.a-price-whole') %>%
+  html_text() %>%
+  head(30)
+
+description[[i]] <-  webpage %>%
+  html_nodes('.a-unordered-list.a-vertical.a-spacing-mini') %>%
+  html_text() %>%
+  head(30)
+
+ratings[[i]] <-  webpage %>%
+  html_nodes('.a-icon.a-icon-star-small.a-star-small-4-5') %>%
+  html_text() %>%
+  head(30)
+
+reviews[[i]] <-  webpage %>%
+  html_nodes('.a-row a-spacing-small.review-data') %>%
+  html_text() %>%
+  head(30)
+}
+```
+
+No. 5
+```{r}
+brush <- data.frame(productName[[1]],
+                       Price = price[[1]],
+                       Ratings = ratings[[1]],
+                       stringsAsFactors = FALSE
+                       )
+
+head(brush, 30)
+
+brush %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+```{r}
+canvas <- data.frame(productName[[2]],
+                       Price = price[[2]],
+                       Ratings = ratings[[2]],
+                       stringsAsFactors = FALSE
+                       )
+head(canvas, 30)
+
+canvas %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+```{r}
+paint <- data.frame(productName[[3]],
+                       Price = price[[3]],
+                       Ratings = ratings[[3]],
+                       stringsAsFactors = FALSE
+                       )
+head(paint, 30)
+
+paint %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+```{r}
+ruler <- data.frame(productName[[4]],
+                       Price = price[[4]],
+                       Ratings = ratings[[4]],
+                       stringsAsFactors = FALSE
+                       )
+head(ruler, 30)
+
+ruler %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+```{r}
+pencil <- data.frame(productName[[5]],
+                       Price = price[[5]],
+                       Ratings = ratings[[5]],
+                       stringsAsFactors = FALSE
+                       )
+head(pencil, 30)
+
+pencil %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+
+No. 6
+```{r}
+# The data extracted consists of the product's name, ratings, and its price. Extracting the description and ratings delivers an issue and can't be included in the data frame of each product.
+```
+
+No.7
+```{r}
+# The extracted data can help identify which products are popular among customers based on ratings and pricing. 
+# Businesses can use this information to enhance marketing strategies, focusing on promoting top-rated and competitively priced products to boost sales and attract new customers.
+```
+
+No.8
+```{r}
+clean_data <- function(df) {
+  df %>%
+    mutate(
+      Price = as.numeric(gsub(",", "", Price)),
+      Ratings = as.numeric(gsub("[^0-9\\.]", "", Ratings))
+    )
+}
+
+brush <- clean_data(brush)
+canvas <- clean_data(canvas)
+paint <- clean_data(paint)
+ruler <- clean_data(ruler)
+pencil <- clean_data(pencil)
+
+all_data <- bind_rows(
+  brush %>% mutate(Category = "Brush"),
+  canvas %>% mutate(Category = "Canvas"),
+  paint %>% mutate(Category = "Paint"),
+  ruler %>% mutate(Category = "Ruler"),
+  pencil %>% mutate(Category = "Pencil")
+)
+
+category_summary <- all_data %>%
+  group_by(Category) %>%
+  summarise(
+    Avg_Price = mean(Price, na.rm = TRUE),
+    Avg_Ratings = mean(Ratings, na.rm = TRUE)
+  )
+
+# Bar Plot
+ggplot(category_summary, aes(x = Category, y = Avg_Price, fill = Category)) +
+  geom_bar(stat = "identity", width = 0.7, color = "black") +
+  labs(
+    title = "Average Price by Product Category",
+    x = "Category",
+    y = "Average Price (in $)",
+    fill = "Category"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+# This bar plot shows the average price of different product categories (Brush, Canvas, Paint, Ruler, Pencil). Each bar represents a category, and its height reflects the average price of products within that category. This visualization helps identify which categories are generally more expensive or cheaper.
+
+
+# Scatter Plot
+ggplot(all_data, aes(x = Ratings, y = Price, color = Category)) +
+  geom_point(size = 3, alpha = 0.7) +
+  labs(
+    title = "Ratings vs. Price Across Categories",
+    x = "Ratings",
+    y = "Price",
+    color = "Category"
+  ) +
+  theme_minimal()
+
+# This scatter plot displays the relationship between ratings (on the x-axis) and price (on the y-axis) for each product across different categories. Each point represents a product, colored by its category. This plot allows us to observe patterns, such as whether higher-priced products tend to have better ratings or if certain categories have more clustered ratings and prices.
+
+all_data <- all_data %>%
+  mutate(Price_Range = cut(Price, breaks = c(0, 20, 50, 100, Inf), 
+                           labels = c("Low", "Medium", "High", "Premium")))
+
+# Grouped Bar Plot
+ggplot(all_data, aes(x = Category, fill = Price_Range)) +
+  geom_bar(position = "dodge") +
+  labs(
+    title = "Product Counts by Price Range and Category",
+    x = "Category",
+    y = "Count",
+    fill = "Price Range"
+  ) +
+  theme_minimal()
+# In this plot, products are categorized into different price ranges (Low, Medium, High, Premium) and grouped by their categories. Each group of bars represents a category, and the bars within each group show the count of products in each price range. This plot is useful for understanding the distribution of product prices within each category, indicating whether certain categories have more budget-friendly or premium-priced products.
+
+```
+
+No. 9
+```{r}
+# Base R Plotting
+categories <- list(brush, canvas, paint, ruler, pencil)
+category_names <- c("Brush", "Canvas", "Paint", "Ruler", "Pencil")
+
+# Reset graphical parameters
+par(mfrow = c(3, 2), mar = c(4, 4, 2, 1)) # Set layout and margins
+
+for (i in 1:length(categories)) {
+  plot(categories[[i]]$Ratings, categories[[i]]$Price,
+       main = paste("Price vs Ratings for", category_names[i]),
+       xlab = "Ratings", ylab = "Price",
+       pch = 19, col = i)
+}
+
+library(ggplot2)
+
+# ggplot2 Plotting
+for (i in 1:length(categories)) {
+  print(
+    ggplot(categories[[i]], aes(x = Ratings, y = Price)) +
+    geom_point(color = i) +
+    labs(title = paste("Price vs Ratings for", category_names[i]),
+         x = "Ratings", y = "Price") +
+    theme_minimal()
+  )
+}
+
+```
+No. 10
+```{r}
+library(dplyr)
+
+# Rank Brush Products
+brush_ranked <- brush %>%
+  arrange(desc(Price), desc(Ratings)) %>%
+  mutate(Rank = row_number())
+
+cat("Top 5 Brush Products by Price and Ratings\n")
+print(head(brush_ranked, 30))
+cat("\n")
+
+# Rank Canvas Products
+canvas_ranked <- canvas %>%
+  arrange(desc(Price), desc(Ratings)) %>%
+  mutate(Rank = row_number())
+
+cat("Top 5 Canvas Products by Price and Ratings\n")
+print(head(canvas_ranked, 30))
+cat("\n")
+
+# Rank Paint Products
+paint_ranked <- paint %>%
+  arrange(desc(Price), desc(Ratings)) %>%
+  mutate(Rank = row_number())
+
+cat("Top 5 Paint Products by Price and Ratings\n")
+print(head(paint_ranked, 30))
+cat("\n")
+
+# Rank Ruler Products
+ruler_ranked <- ruler %>%
+  arrange(desc(Price), desc(Ratings)) %>%
+  mutate(Rank = row_number())
+
+cat("Top 5 Ruler Products by Price and Ratings\n")
+print(head(ruler_ranked, 30))
+cat("\n")
+
+# Rank Pencil Products
+pencil_ranked <- pencil %>%
+  arrange(desc(Price), desc(Ratings)) %>%
+  mutate(Rank = row_number())
+
+cat("Top 5 Pencil Products by Price and Ratings\n")
+print(head(pencil_ranked, 30))
+cat("\n")
+
+```
+Sorted by Price: We first ranked products from most expensive to least expensive.
+
+Sorted by Ratings: Within the same price, higher-rated products are ranked higher.
+
+Highlight Premium Products: Businesses can feature top-priced and high-rated items in promotions.
+
+Stock Inventory: Focus on stocking the top-ranked products.
+
+Customer Attraction: Promote highly-rated products to attract more customers.
+
+This helps businesses make smarter marketing and inventory decisions. 
