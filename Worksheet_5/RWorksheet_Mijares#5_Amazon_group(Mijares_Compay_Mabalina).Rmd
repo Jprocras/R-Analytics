@@ -79,6 +79,54 @@ brush %>%
   kable_styling(latex_options = "scale_down")
 ```
 ```{r}
+url <-c('https://www.amazon.com/Chemical-Guys-Acc_S95-Bristle-Cleaning/dp/B01K9ELWPI/ref=sr_1_1_sspa?crid=WBCV58QBQBM9&dib=eyJ2IjoiMSJ9.cguJyqQ1MOiSY9ux8SYiW58ResEU6dpr9W7OAw-32HDjCn6zuPs6SubcrFb4_1nqjEV4X3R1hRY_1TLWq4pdrjcVd4vUKsX9G08bPLOSqirPyBgh-3tNB3iNVFvNevnaceltb7JcOprLLYP70ed2dbWHZMxnsaniV9RFk5NCY-4ZzQzUEWTb6Q5MBttSGb3wZdLrMHUUQP_nB3LdMAndwmRwTCynt20xgbrl7cywPG4fjUp4C1l8mDkgvj0wkCX_7XjTaDB-u7snOe1VIfZYkJjbl6i_jRiXkgJ9iaTpIbs.nQxauuoUNLmH3gk2lNgHkl-JxrF8pnwDDeBWtmMH5nc&dib_tag=se&keywords=brush&qid=1732066430&sprefix=brus%2Caps%2C407&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&th=1', 'https://www.amazon.com/s?k=canvas&crid=32UVOLYJWWMU0&sprefix=canva%2Caps%2C702&ref=nb_sb_noss_2', 'https://www.amazon.com/s?k=paint&crid=3QPZCQNMHYBRX&sprefix=pain%2Caps%2C586&ref=nb_sb_noss_2', 'https://www.amazon.com/s?k=ruler&crid=2U8K5JO8ILASM&sprefix=r%2Caps%2C679&ref=nb_sb_noss_2', 'https://www.amazon.com/s?k=pencil&crid=FIQ42K8IECS4&sprefix=penci%2Caps%2C432&ref=nb_sb_noss_2')
+
+
+Reviewer <- vector("list", length(url))
+Date <- vector("list", length(url))
+individualrating <- vector("list", length(url))
+textreview <- vector("list", length(url))
+titlereview <- vector("list", length(url))
+verifiedproducts <- vector("list", length(url))
+```
+```{r}
+dataFrame <- list()
+
+for (i in seq_along(url)) {
+    session <- bow(url[i], user_agent = "Educational")
+    webpage <- scrape(session)
+    
+    Reviewer[[i]] <- webpage %>% html_nodes('.a-profile-name') %>% html_text() %>% head(20)
+    
+    Date[[i]] <-  webpage %>%
+  html_nodes('.a-size-base a-color-secondary review-date') %>%
+  html_text() %>%
+  head(20)
+
+individualrating [[i]] <-  webpage %>%
+  html_nodes('.a-icon a-icon-star.a-star-5 review-rating') %>%
+  html_text() %>%
+  head(20)
+
+textreview[[i]] <-  webpage %>%
+  html_nodes('.a-expander-content.reviewText.review-text-content.a-expander-partial-collapse-content') %>%
+  html_text() %>%
+  head(20)
+
+titlereview[[i]] <-  webpage %>%
+  html_nodes('.a-size-base.a-link-normal.review-titlea-color-base.review-title-content.a-text-bold') %>%
+  html_text() %>%
+  head(20)
+verifiedproducts[[i]] <-  webpage %>%
+  html_nodes('.a-size-mini.a-color-state.a-text-bold') %>%
+  html_text() %>%
+  head(20)
+}
+```
+```{r}
+Reviewer
+```
+```{r}
 canvas <- data.frame(productName[[2]],
                        Price = price[[2]],
                        Ratings = ratings[[2]],
