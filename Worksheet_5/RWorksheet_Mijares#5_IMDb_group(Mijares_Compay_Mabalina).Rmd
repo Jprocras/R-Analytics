@@ -11,11 +11,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 library(rvest)
-library(httr)
 library(dplyr)
 library(polite)
 library(kableExtra)
 library(stringr)
+library(knitr)
+library(tidyverse)
 
 
 url <- 'https://www.imdb.com/chart/toptv'
@@ -38,13 +39,13 @@ rank
 
 
 ```{r}
-title <- str_replace(name, "^\\d+\\.", "")
+title <- str_replace(name1, "^\\d+\\.", "")
 title
 ```
 
 
 ```{r}
-year = page %>% html_nodes(".sc-5bc66c50-6.OOdsw.cli-title-metadata-item") %>% html_text()
+year = page %>% html_nodes(".sc-6ade9358-7.exckou.cli-title-metadata-item") %>% html_text()
 years <- str_extract_all(year, "\\b\\d{4}(?:–\\d{4})?\\b") %>% unlist()
 years
 ```
@@ -57,7 +58,7 @@ ratings
 
 
 ```{r}
-episode <- page %>% html_nodes(".sc-5bc66c50-6.OOdsw.cli-title-metadata-item") %>%
+episode <- page %>% html_nodes(".sc-6ade9358-7.exckou.cli-title-metadata-item") %>%
 html_text()
 episodes <- str_extract_all(episode, "\\b\\d+ eps\\b") %>% unlist()
 episodes
