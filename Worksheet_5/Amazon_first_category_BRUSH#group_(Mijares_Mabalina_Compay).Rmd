@@ -1,0 +1,620 @@
+---
+title: "Amazon_first_category_BRUSH#group_(Mijares_Mabalina_Compay)"
+author: "Mijares_Compay_Mabalina"
+date: "2024-12-08"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(polite)
+library(kableExtra)
+library(rmarkdown)
+library(httr)
+library(rvest)
+library(dplyr)
+library(stringr)
+library(ggplot2)
+```
+
+```{r}
+urls <- c('https://www.amazon.com/Kitsch-Detangler-Brush-Adults-Easy/dp/B0D4F9SZN9/ref=sr_1_5?crid=3LJ2UQ9JTGN87&dib=eyJ2IjoiMSJ9.k0Qn7rIZROl5bv11QZN8x-S_JD0EEWXaoHZsSO3KbJE-d_12PmvEE8Gh0CYGwcm_QiLdhMU30hoXV0UGcxGnGRxhe_FMsT8J-PmQ2IOz_zx_Ty0pObc9PM4a2hxDYwCmWT1ug7EqD-ZmNwjU_96t5JHMstqtcXd0jCrrpQTOcEqv5a_OaddKWxAg4kyHHWcyJiDNAUa-9pBLNvr7lKPyQvQoUrf62GkwS6NliBqsGBypEkUaFq7dSu-PmCKQ9G6q31eRSR_l9-_uN-YUjoydOoutb13IEBVskGCuch8Dc30.ddZydvJep1xyfC8JwPv33EHWoFc5FBBQYmkjOXuVhX0&dib_tag=se&keywords=Kitsch+Detangler+Brush+for+Curly%2C+Straight%2C+Wet+and+Dry+Hair+-+No+Pain+Hair+Detangler+Brush+with+Flexible+Bristles%2C+Easy-to-Hold%2C+Shower+%26+T&qid=1733650889&sprefix=kitsch+detangler+brush+for+curly%2C+straight%2C+wet+and+dry+hair+-+no+pain+hair+detangler+brush+with+flexible+bristles%2C+easy-to-hold%2C+shower+%26+t%2Caps%2C486&sr=8-5',
+          'https://www.amazon.com/Wet-Brush-Detangler-Hair-Brush-Detangling/dp/B005LPN8R6/ref=sr_1_1?crid=133ROQ9PQEV6D&dib=eyJ2IjoiMSJ9.GC_Hm_Y4cXH4-KWU8-Kw5xNWDgvxwbtWcQN3ldyJTbdLlCxsKdb92bDxxpGOxAZO7YUFUNJ2Pbr7eMqHLHN6_ys57pN589O8XqWMkXEDVndNHW_WC7cXvLfRG-jaQjVcWm4YNOJi1MfMHKI6l_bkTx1KkWFc4RCTER2h6XrIZmyectwexKi-N_7-NQBZuO6Rpb12fINIb77gHSJDYk8lz0a3ZBHa6cJwPjGgYqGTxmSLBTAzgak_wuQ8smHmUol7cC4Xlx2PN9T2Qphm5QCatCMTSlK4U4594LT5gFrkmqk.nD_hGqWg3Ss6mvN2d4dApH9bzBbBAR9gAFC820nuPFg&dib_tag=se&keywords=Wet+Brush+Original+Detangler+Hair+Brush%2C+Classic+Black+-+Ultra-Soft+IntelliFlex+Bristles+-+Detangling+Brush+Glide+Through+Tangles+With+Ease+For+All+Hair+Types+-+For+Women%2C+Men%2C+Wet+%26+Dry+Hair&qid=1733650932&sprefix=wet+brush+original+detangler+hair+brush%2C+classic+black+-+ultra-soft+intelliflex+bristles+-+detangling+brush+glide+through+tangles+with+ease+for+all+hair+types+-+for+women%2C+men%2C+wet+%26+dry+hair+%2Caps%2C288&sr=8-1',
+          'https://www.amazon.com/LAURA-GELLER-NEW-YORK-Retractable/dp/B09XFKDX6Z/ref=sr_1_5?crid=1VGHJXYBCD1JW&dib=eyJ2IjoiMSJ9.woZWOzAHWbDIpADcsQEIVn-xx-OHNqgiyTRtDd0XP96M08-gULfM5xkZe82SSZr0k30xcktCbweQqxCgmSGmnAJ67lQ38kGhGKpz3cfTfP3yFBDfyx9YxZ1gxwM5GWsapnusnV5G5E4CqSoNdiP0-DpLxF7roYkbjEQASZMoLjGIwYcmMRC02vF5R_9eX1QyDMmBh9u_uZRZ2Px5d5clAXlWE9VT4kH3MxiLixzLAMTfkFSKJfm69Tzt8y4fBWOZjbgpIbE-9LQ66mLoc0bv7AQq-WWdyQjPEjJJwS9iQRE.hGa9Db594oL7RwoJUq9am3MV7eTETRImKkVG5cBK2Og&dib_tag=se&keywords=LAURA+GELLER+NEW+YORK+Retractable+Airbrush+Kabuki+Brush+for+All+Face+Makeup+%26+Foundation+for+Liquid%2C+Cream+and+Powder+Face+Make&qid=1733650980&sprefix=laura+geller+new+york+retractable+airbrush+kabuki+brush+for+all+face+makeup+%26+foundation+for+liquid%2C+cream+and+powder+face+make%2Caps%2C323&sr=8-5',
+          'https://www.amazon.com/FHI-Heat-UnBrush-Handle-Peach/dp/B07ZG3MKWL/ref=sr_1_1?crid=AZMRQJ4L4C22&dib=eyJ2IjoiMSJ9.rcqRLDGOnhpjXC1N5PllngahCLUcI-NS82B_1jxQAU6gRtpbXpIlUDBvsb5w6kvbE7D6BOaQ3w84ZaNZ5xx4Mzl1pyrLaBCIVeRt9XAgkMqJTAzAwcr05x8728b_01HJyYGxBOAeObTFd_S2fYkPhRKusQ0i-W4Sw9Cq5ZHmHXYSBuNLIhyaID39IBg3jryiVsSPUc8xQrDkuDDA7sVgku6Zyq16e9WL_qiLUl1PIofGVMMU8AfuHR9UEU-1AJSuahx8Dq2VRfem3zOL5u_j4fgV2yJElILI0I6rZBIx0ag.hp2ODU7znZi1XTkJtdZh_GDPdlugktWD6ADzzAQB2kY&dib_tag=se&keywords=FHI+Heat+UNbrush+Detangling+Brush+for+Pain-Free+Brushing+on+All+Wet+or+Dry+Hair+Types+%E2%80%94+Durable+DuoFlex+Anti-Static+Bristles%2C+Lightweig&qid=1733651015&sprefix=fhi+heat+unbrush+detangling+brush+for+pain-free+brushing+on+all+wet+or+dry+hair+types+durable+duoflex+anti-static+bristles%2C+lightweig%2Caps%2C317&sr=8-1',
+          'https://www.amazon.com/BS-MALL-Synthetic-Foundation-Concealers-B-Purple/dp/B0C73WQTQZ/ref=sr_1_1?crid=2LJQJMTY8C3H5&dib=eyJ2IjoiMSJ9.R6v30WWgZeEvpmn4ta7nvlzRRBIuyJHsaUMhX7CkaBFdGMqPW4HoYVaFBxB_NH0X4-Xkoj2tqCJ60zYqJLbmOdcUkUDZ1wEinAg5y67-vvK4oZzPvllJGxF2ym6AnHd5pehZaQ5E0-tV9q2GwIECNKbIAGQrjrpA2u5QA6JaCkj6SZLAHErGuRJv0ilfpRMsF1MHagZnpBcJdne6csd29XFS_ANp61wt-5Ou7IvDK54TGSlpYyIpF2cL3V4C1iDjblrf3r11wqiY2CZEsTRIlN7iOvFWW2X6hx3spgXLXrY.fTItTxcVcfAuy3-l_dtuVnf9Z-RsV2WbsMWcNvnIqKE&dib_tag=se&keywords=BS-MALL+Makeup+Brush+Set+18+Pcs+Premium+Synthetic+Foundation+Powder+Concealers+Eye+shadows+Blush+Makeup+Brushes+with+black+case&qid=1733651069&sprefix=bs-mall+makeup+brush+set+18+pcs+premium+synthetic+foundation+powder+concealers+eye+shadows+blush+makeup+brushes+with+black+case+%2Caps%2C334&sr=8-1',
+          'https://www.amazon.com/Brush-Bristle-Hairbrush-Smooth-Paddle/dp/B07N4PCYTD/ref=sr_1_5?crid=3TU1OSZY8Z5K6&dib=eyJ2IjoiMSJ9.c-6Dmei_wpoSVtXvJs-z_3zDKOrOkw-kTnYBJlN2wABXhTP3b_Ue3VwA368-DAQtowRuFKBPKrZyrd-M0ca1m8U_XGRudU-9RjTDmM8CEuUgNtGpfpQRdghEI4sbxxzbY9OB63HNEt7nBK4OZqjoj4w2ix4IiMOAe5MO5T4mGwlLJ1uITncQhgTggBnLIeN6A6xUrjYB2as2ERwpW1JQuAN9mUa4GIzObmipfEaxcOpC4KeYdgFFVZHRXrMX8NNHFfZ9rehQhGcGiRZC39oYANbVHqpDt48ciPHlliES90s.O3kJbg2eCdlMgqQu8XBfQRTuvTAspOU2WdfhoOCR-sY&dib_tag=se&keywords=Hair+Brush+Boar+Bristle+Hairbrush+for+Thick+Curly+Thin+Long+Short+Wet+or+Dry+Hair+Adds+Shine+and+Makes+Hair+Smooth%2C+Best+Paddle+Hair+Bru&qid=1733651103&sprefix=hair+brush+boar+bristle+hairbrush+for+thick+curly+thin+long+short+wet+or+dry+hair+adds+shine+and+makes+hair+smooth%2C+best+paddle+hair+bru%2Caps%2C338&sr=8-5',
+          'https://www.amazon.com/Crave-Naturals-Detangling-Brushes-Adults/dp/B0B2WYJ6R4/ref=sr_1_5?crid=3C9NZ518Z2OH6&dib=eyJ2IjoiMSJ9.-u2U1kf3PplDV3-KCdu40GNLHfr0OWY13zOrKwqxxbMukVU_iTL5N7AsFwcajD0MZIIxsGZ9w3nDIMV4InFRvHP-o74jLsAlA9x72octp45CuR_taOqVtoYmWjgTnAXSKBeazwzFZ7xDHZlA0K5Hx6jUI721g8FeWHfFYtAxirzRD7lUGNH_ItAqNR6Zmq2b25NHx-UoRbrvqkjPk2DPXhx5h7pWS4Te0kAvRcK0Yz82tyzRORCJGrhdyEx7Bg_SMkWnf8zSiiXry62_6B5m8Q0cL4mMYUmRBFWAKGF0GwA.hxneKimrRJkLb4h3mYdtFyWVCgzEjcn7JtBS_HVzi_M&dib_tag=se&keywords=Crave+Naturals+Glide+Thru+Detangling+Brush+-+Detangler+Brush+for+Natural%2C+Curly%2C+Straight%2C+Wet+and+Dry+Hair+for+Adults+and+Kids+-+Hair+Brus&qid=1733651139&sprefix=crave+naturals+glide+thru+detangling+brush+-+detangler+brush+for+natural%2C+curly%2C+straight%2C+wet+and+dry+hair+for+adults+and+kids+-+hair+brus%2Caps%2C307&sr=8-5',
+          'https://www.amazon.com/Pro-Grade-Professional-Painting-Commercial-Paintbrush/dp/B07JHQ4L4F/ref=sr_1_5?crid=1LG8KY91W39WL&dib=eyJ2IjoiMSJ9.QKnf6ASyARha0TfqG9pcyUO7QxazEocoI70RHA9oIX9Od9fouToVQqVsgFaiiIyfUlp-Sk4D0I6cA-NZVtkKJKqxhbOGFvo6NI2Ubfyq9rvGg5aJpf8N8ikmrpYgfyyHdMlDOw4xQIwB82H4aefX-Qe58SlKfwIB5ttCxitLb1kSQNIkTv2SNvQD7b4aibjtJGCuzOfZrft-mgXTYBI7ijSUI9ZM0huzbcYJ6BO0tQ65gTVKUJXQZQqdT9rbYS6kKOAPLqDBOVhFy8djCz_wXcklqkwsNmuMfeVDouFxQ-s.vuR5wg3rk4I8ZXMlSYxVsrWbrecoL2gUp60hiMcgne8&dib_tag=se&keywords=Pro+Grade-+Paint+Brushes+-+5+Piece+Flat+and+Angle%2C+Paint+Brush+for+All+Latex+and+Oil+Paints+%26+Stains+-+Home+Improvement+-+Interior+%26+Exteri&qid=1733651173&sprefix=pro+grade-+paint+brushes+-+5+piece+flat+and+angle%2C+paint+brush+for+all+latex+and+oil+paints+%26+stains+-+home+improvement+-+interior+%26+exteri%2Caps%2C327&sr=8-5',
+          'https://www.amazon.com/Conair-Detangling-Hair-Brush-3PK/dp/B0DKB2RDTG/ref=sr_1_3?crid=39ILYL8D93OWH&dib=eyJ2IjoiMSJ9.AjQ_4xB13QP9XZ0qwNcmmrpba-Hssop7RWGw91eJaNr1HUOQ2Ug_nvXlrvHk1l10E5fAS_uiHm58wP43hJPzM_A1yDPDLiyTtV2VmclhU_LrLc2Rcl6XlYizeuThy5JhQ37ohLlODpIJHr34zLT6AHfYY20lfT3MnfZC7-ahLnBBUBy0tEklTNE_Iv5G73jcuypBAuH4OPtvahOMc126cnm79_1FkeRCSRd4sjSuZ2tN5roVFjmRyWc7rjqJ2u21YoWvTfLW3R_VTNoeMsCPRnBIN0AbdaKUWYfwdmkY4cI.Z4yolND7YLePWDedKDkqkx_vOekapkRYr0mAjuH9HTo&dib_tag=se&keywords=Conair+Detangling+Hair+Brush+3PK+-+For+wet+and+dry+hair+-+Ideal+for+all+hair+types+-+curly+hair+brush+-+hair+brushes+for+women+-+detangler+br&qid=1733651213&sprefix=conair+detangling+hair+brush+3pk+-+for+wet+and+dry+hair+-+ideal+for+all+hair+types+-+curly+hair+brush+-+hair+brushes+for+women+-+detangler+br%2Caps%2C298&sr=8-3',
+          'https://www.amazon.com/Kitsch-Detangler-Brush-Adults-Easy/dp/B0D4F9SZN9/ref=sr_1_5?crid=2GZC6CP3OZFIH&dib=eyJ2IjoiMSJ9.k0Qn7rIZROl5bv11QZN8x-S_JD0EEWXaoHZsSO3KbJE-d_12PmvEE8Gh0CYGwcm_QiLdhMU30hoXV0UGcxGnGRxhe_FMsT8J-PmQ2IOz_zx_Ty0pObc9PM4a2hxDYwCmWT1ug7EqD-ZmNwjU_96t5JHMstqtcXd0jCrrpQTOcEqv5a_OaddKWxAg4kyHHWcyJiDNAUa-9pBLNvr7lKPyQvQoUrf62GkwS6NliBqsGBypEkUaFq7dSu-PmCKQ9G6q31eRSR_l9-_uN-YUjoydOoutb13IEBVskGCuch8Dc30.ddZydvJep1xyfC8JwPv33EHWoFc5FBBQYmkjOXuVhX0&dib_tag=se&keywords=Kitsch+Detangler+Brush+for+Curly%2C+Straight%2C+Wet+and+Dry+Hair+-+No+Pain+Hair+Detangler+Brush+with+Flexible+Bristles%2C+Easy-to-Hold%2C+Shower+%26+T&qid=1733651267&sprefix=kitsch+detangler+brush+for+curly%2C+straight%2C+wet+and+dry+hair+-+no+pain+hair+detangler+brush+with+flexible+bristles%2C+easy-to-hold%2C+shower+%26+t%2Caps%2C289&sr=8-5')
+
+nameofproduct <- vector("list", length(urls))
+names <- vector("list", length(urls))
+ratings <- vector("list", length(urls))
+dates <- vector("list", length(urls))
+title <- vector("list", length(urls))
+text <- vector("list", length(urls))
+n <- vector("list", length(urls))
+```
+
+```{r}
+df <- list()
+
+for (i in seq_along(urls)) {
+    session <- bow(urls[i], user_agent = "Educational")
+    webpage <- scrape(session)
+  
+    
+    nam <- webpage %>% html_nodes(".a-profile-name") %>% html_text()
+    nam <- nam[!grepl("hair care routine for BROKEN DAMAGED hair|Amazon Customer", nam, ignore.case = TRUE)]
+    nam <- nam[nam != ""]
+    n[[i]] <- nam
+    name <- c() 
+    non_amazon_seen <- FALSE  
+    for (na in nam) {
+      if (na == "Amazon Customer") {
+
+        if (non_amazon_seen) {
+          name <- c(name, na)
+        }
+      } else {
+        name <- c(name, na)
+        non_amazon_seen <- TRUE
+        }
+    }
+    name <- name[!duplicated(name) | name == "Amazon Customer"]
+    names[[i]] <- name
+    
+        nameofproduct[[i]] <-  webpage %>%
+  html_nodes('.a-size-large.product-title-word-break') %>%
+  html_text()
+    nameofproduct[[i]] <- rep(nameofproduct[[i]], length.out = length(names[[i]]))
+    
+    rate <- webpage %>% html_nodes(".a-icon-alt") %>% html_text()
+    rati <- rate[!grepl("Previous page of related Sponsored Products|Next page of related Sponsored Products|Previous page|Next page", rate, ignore.case = TRUE)]
+    rat <- gsub(" out of 5 stars", "", rati)
+    rats <- rat
+    if (length(rats) > length(name)) {
+    rats <- tail(rats, length(name)) 
+    } else if (length(rats) < length(name)) {
+    rats <- c(rats, rep(NA, length(name) - length(rats)))
+    }
+
+    ratings[[i]] <- rats
+    
+    dat <- webpage %>% html_nodes(".a-size-base.a-color-secondary.review-date") %>% html_text()
+    date <- gsub("Reviewed.*on ", "", dat)
+    dates[[i]] <- date
+
+    titl <- webpage %>% html_nodes(".a-size-base.review-title.a-color-base.review-title-content.a-text-bold") %>% html_text()
+    tit <- gsub("Reviewed.*on ", "", titl)
+    ti <- gsub(".*stars\\s*", "", tit)
+    t <- gsub("\\s+", " ", ti)
+    title[[i]] <- t
+
+    tex <- webpage %>% html_nodes(".a-expander-content.reviewText.review-text-content.a-expander-partial-collapse-content") %>% html_text()
+    te <- gsub("\\n", " ", tex)
+    t <- gsub("\\s+", " ", te)
+    text[[i]] <- trimws(t)
+}
+```
+
+```{r}
+cate <- c("Category 1: BRUSH", "Category 2", "Category 3", "Category 4", "Category 5")
+category <- vector("list", length(urls))  # Match the length of 'urls'
+
+for (i in seq_along(category)) {
+    category[[i]] <- rep(cate[i %% length(cate) + 1], length.out = length(names[[i]]))
+}
+```
+
+```{r}
+for (i in seq_along(urls)) {
+    category[[i]] <- rep(category[[i]], length.out = length(names[[i]]))
+}
+```
+
+```{r}
+productnumbe <- c("Product 1", "Product 2", "Product 3", "Product 4", "Product 5", "Product 6", "Product 7", "Product 8", "Product 9", "Product 10")
+productnumber <- vector("list", length(productnumbe))
+for (i in seq_along(productnumbe)) {
+    productnumber[[i]] <- productnumbe[i]
+}
+for (i in seq_along(urls)) {
+    productnumber[[i]] <- rep(productnumber[[i]], length.out = length(names[[i]]))
+}
+```
+
+```{r}
+
+brush1 <- data.frame(Category = category[[1]],
+                     Product_number = productnumber[[1]],
+                      Name_of_Product = nameofproduct[[1]],
+                      Userame = names[[1]],
+                       Rating = ratings[[1]],
+                       Date = dates[[1]],
+                       Title_of_Review = title[[1]],
+                       Text_of_Review = text[[1]],
+                       stringsAsFactors = FALSE
+                       )
+head(brush1, 50)
+
+brush1 %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+
+```{r}
+nama <- names[[2]]
+namez <- nama[!grepl("Amazon Customer", nama, ignore.case = TRUE)]
+producto <- productnumber[[2]]
+producto <- rep(producto, length.out = length(namez))
+produc <- nameofproduct[[2]]
+produc <- rep(produc, length.out = length(namez))
+cater <- category[[1]]
+ca <- rep(cater, length.out = length(namez))
+
+ratingz <- ratings[[2]]
+    if (length(ratingz) > length(namez)) {
+    ratingz <- tail(ratingz, length(namez)) 
+    } else if (length(ratingz) < length(namez)) {
+    ratingz <- c(ratingz, rep(NA, length(namez) - length(ratingz)))
+    }
+```
+
+```{r}
+brush2 <- data.frame(Category = ca,
+                     Product_number = producto,
+                      Name_of_Product = produc,
+                      Userame = namez,
+                       Rating = ratingz,
+                       Date = dates[[2]],
+                       Title_of_Review = title[[2]],
+                       Text_of_Review = text[[2]],
+                       stringsAsFactors = FALSE
+                       )
+head(brush2, 50)
+
+brush2 %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+
+```{r}
+nama1 <- names[[3]]
+namez1 <- nama1[!grepl("NA", nama1, ignore.case = TRUE)]
+namez1 <- unique(namez1)
+namez1 <- namez1[-1]
+producto1 <- productnumber[[3]]
+producto1 <- rep(producto1, length.out = length(namez1))
+produc1 <- nameofproduct[[3]]
+produc1 <- rep(produc1, length.out = length(namez1))
+cater1 <- category[[1]]
+ca1 <- rep(cater1, length.out = length(namez1))
+
+ratingz1 <- ratings[[3]]
+    if (length(ratingz1) > length(namez1)) {
+    ratingz1 <- tail(ratingz1, length(namez1)) 
+    } else if (length(ratingz) < length(namez1)) {
+    ratingz1 <- c(ratingz1, rep(NA, length(namez1) - length(ratingz1)))
+    }
+```
+
+```{r}
+brush3 <- data.frame(Category = ca1,
+                     Product_number = producto1,
+                      Name_of_Product = produc1,
+                      Userame = namez1,
+                       Rating = ratingz1,
+                       Date = dates[[3]],
+                       Title_of_Review = title[[3]],
+                       Text_of_Review = text[[3]],
+                       stringsAsFactors = FALSE
+                       )
+head(brush3, 50)
+brush3 %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+
+```{r}
+nama2 <- names[[4]]
+namez2 <- nama2[!grepl("FHI HEAT UNbrush Wet & Dry Vented Detangling Hair Brush", nama2, ignore.case = TRUE)]
+namez2 <- namez2[-(1:2)]
+producto2 <- productnumber[[4]]
+producto2 <- rep(producto2, length.out = length(namez2))
+produc2 <- nameofproduct[[4]]
+produc2 <- rep(produc2, length.out = length(namez2))
+cater2 <- category[[1]]
+ca2 <- rep(cater2, length.out = length(namez2))
+
+ratingz2 <- ratings[[4]]
+    if (length(ratingz2) > length(namez2)) {
+    ratingz2 <- tail(ratingz2, length(namez2)) 
+    } else if (length(ratingz2) < length(namez2)) {
+    ratingz2 <- c(ratingz2, rep(NA, length(namez2) - length(ratingz2)))
+    }
+```
+
+```{r}
+max_length <- max(
+  length(ca2),
+  length(producto2),
+  length(produc2),
+  length(namez2),
+  length(ratingz2),
+  length(dates[[4]]),
+  length(title[[4]]),
+  length(text[[4]])
+)
+
+ca2 <- c(ca2, rep(NA, max_length - length(ca2)))
+producto2 <- c(producto2, rep(NA, max_length - length(producto2)))
+produc2 <- c(produc2, rep(NA, max_length - length(produc2)))
+namez2 <- c(namez2, rep(NA, max_length - length(namez2)))
+ratingz2 <- c(ratingz2, rep(NA, max_length - length(ratingz2)))
+dates[[4]] <- c(dates[[4]], rep(NA, max_length - length(dates[[4]])))
+title[[4]] <- c(title[[4]], rep(NA, max_length - length(title[[4]])))
+text[[4]] <- c(text[[4]], rep(NA, max_length - length(text[[4]])))
+
+brush4 <- data.frame(Category = ca2,
+                     Product_number = producto2,
+                      Name_of_Product = produc2,
+                      Userame = namez2,
+                       Rating = ratingz2,
+                       Date = dates[[4]],
+                       Title_of_Review = title[[4]],
+                       Text_of_Review = text[[4]],
+                       stringsAsFactors = FALSE
+                       )
+head(brush4, 50)
+brush4 %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+
+```{r}
+nama3 <- names[[5]]
+nama3
+namez3 <- nama3[!grepl("A Makeup Artist's Opinion On These Makeup Brushes!", nama3, ignore.case = TRUE)]
+namez3 <- namez3[-(1:2)]
+producto3 <- productnumber[[5]]
+producto3 <- rep(producto3, length.out = length(namez3))
+produc3 <- nameofproduct[[5]]
+produc3 <- rep(produc3, length.out = length(namez3))
+cater3 <- category[[1]]
+ca3 <- rep(cater3, length.out = length(namez3))
+
+ratingz3 <- ratings[[5]]
+    if (length(ratingz3) > length(namez3)) {
+    ratingz3 <- tail(ratingz3, length(namez3)) 
+    } else if (length(ratingz3) < length(namez3)) {
+    ratingz3<- c(ratingz3, rep(NA, length(namez3) - length(ratingz3)))
+    }
+```
+
+```{r}
+max_length <- max(
+  length(ca3),
+  length(producto3),
+  length(produc3),
+  length(namez3),
+  length(ratingz3),
+  length(dates[[5]]),
+  length(title[[5]]),
+  length(text[[5]])
+)
+
+ca3 <- c(ca3, rep(NA, max_length - length(ca3)))
+producto3 <- c(producto3, rep(NA, max_length - length(producto3)))
+produc3 <- c(produc3, rep(NA, max_length - length(produc3)))
+namez3 <- c(namez3, rep(NA, max_length - length(namez3)))
+ratingz3 <- c(ratingz3, rep(NA, max_length - length(ratingz3)))
+dates[[5]] <- c(dates[[5]], rep(NA, max_length - length(dates[[5]])))
+title[[5]] <- c(title[[5]], rep(NA, max_length - length(title[[5]])))
+text[[5]] <- c(text[[5]], rep(NA, max_length - length(text[[5]])))
+
+brush5 <- data.frame(Category = ca3,
+                     Product_number = producto3,
+                      Name_of_Product = produc3,
+                      Userame = namez3,
+                       Rating = ratingz3,
+                       Date = dates[[5]],
+                       Title_of_Review = title[[5]],
+                       Text_of_Review = text[[5]],
+                       stringsAsFactors = FALSE
+                       )
+head(brush5, 50)
+brush5 %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+
+```{r}
+nama4 <- n[[6]]
+namez4 <- nama4[!grepl("URTHEONE Boar Bristle Hair Brush", nama4, ignore.case = TRUE)]
+namez4 <- namez4[-(1:2)]
+namez4 <- unique(namez4)
+producto4 <- productnumber[[6]]
+producto4 <- rep(producto4, length.out = length(namez4))
+produc4 <- nameofproduct[[6]]
+produc4 <- rep(produc4, length.out = length(namez4))
+cater4 <- category[[1]]
+ca4 <- rep(cater4, length.out = length(namez4))
+
+ratingz4 <- ratings[[6]]
+    if (length(ratingz4) > length(namez4)) {
+    ratingz4 <- tail(ratingz4, length(namez4)) 
+    } else if (length(ratingz4) < length(namez4)) {
+    ratingz4<- c(ratingz4, rep(NA, length(namez4) - length(ratingz4)))
+    }
+```
+
+```{r}
+max_length <- max(
+  length(ca4),
+  length(producto4),
+  length(produc4),
+  length(namez4),
+  length(ratingz4),
+  length(dates[[6]]),
+  length(title[[6]]),
+  length(text[[6]])
+)
+
+ca4 <- c(ca4, rep(NA, max_length - length(ca4)))
+producto4 <- c(producto4, rep(NA, max_length - length(producto4)))
+produc4 <- c(produc4, rep(NA, max_length - length(produc4)))
+namez4 <- c(namez4, rep(NA, max_length - length(namez4)))
+ratingz4 <- c(ratingz4, rep(NA, max_length - length(ratingz4)))
+dates[[6]] <- c(dates[[6]], rep(NA, max_length - length(dates[[6]])))
+title[[6]] <- c(title[[6]], rep(NA, max_length - length(title[[6]])))
+text[[6]] <- c(text[[6]], rep(NA, max_length - length(text[[6]])))
+
+brush6 <- data.frame(Category = ca4,
+                     Product_number = producto4,
+                      Name_of_Product = produc4,
+                      Userame = namez4,
+                       Rating = ratingz4,
+                       Date = dates[[6]],
+                       Title_of_Review = title[[6]],
+                       Text_of_Review = text[[6]],
+                       stringsAsFactors = FALSE
+                       )
+head(brush6, 50)
+brush6 %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+
+
+```{r}
+nama5 <- names[[7]]
+namez5 <- nama5[!grepl("Glide Thru Detangling Brush in Action", nama5, ignore.case = TRUE)]
+namez5 <- namez5[-(1:2)]
+producto5 <- productnumber[[7]]
+producto5 <- rep(producto5, length.out = length(namez5))
+produc5 <- nameofproduct[[7]]
+produc5 <- rep(produc3, length.out = length(namez5))
+cater5 <- category[[1]]
+ca5 <- rep(cater5, length.out = length(namez5))
+
+ratingz5 <- ratings[[7]]
+    if (length(ratingz5) > length(namez5)) {
+    ratingz5 <- tail(ratingz5, length(namez5)) 
+    } else if (length(ratingz5) < length(namez5)) {
+    ratingz5<- c(ratingz5, rep(NA, length(namez5) - length(ratingz5)))
+    }
+```
+
+```{r}
+max_length <- max(
+  length(ca5),
+  length(producto5),
+  length(produc5),
+  length(namez5),
+  length(ratingz5),
+  length(dates[[7]]),
+  length(title[[7]]),
+  length(text[[7]])
+)
+
+ca5 <- c(ca5, rep(NA, max_length - length(ca5)))
+producto5 <- c(producto5, rep(NA, max_length - length(producto5)))
+produc5 <- c(produc5, rep(NA, max_length - length(produc5)))
+namez5 <- c(namez5, rep(NA, max_length - length(namez5)))
+ratingz5 <- c(ratingz5, rep(NA, max_length - length(ratingz5)))
+dates[[7]] <- c(dates[[7]], rep(NA, max_length - length(dates[[7]])))
+title[[7]] <- c(title[[7]], rep(NA, max_length - length(title[[7]])))
+text[[7]] <- c(text[[7]], rep(NA, max_length - length(text[[7]])))
+
+brush7 <- data.frame(Category = ca5,
+                     Product_number = producto5,
+                      Name_of_Product = produc5,
+                      Userame = namez5,
+                       Rating = ratingz5,
+                       Date = dates[[7]],
+                       Title_of_Review = title[[7]],
+                       Text_of_Review = text[[7]],
+                       stringsAsFactors = FALSE
+                       )
+head(brush7, 50)
+brush7 %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+
+```{r}
+nama6 <- names[[8]]
+nama6
+namez6 <- nama6[!grepl("Pro Grade Paint Brush Set, 5 Paint Brushes for all uses.", nama6, ignore.case = TRUE)]
+namez6 <- namez6[-(1:2)]
+producto6 <- productnumber[[8]]
+producto6 <- rep(producto6, length.out = length(namez6))
+produc6 <- nameofproduct[[8]]
+produc6 <- rep(produc6, length.out = length(namez6))
+cater6 <- category[[1]]
+ca6 <- rep(cater6, length.out = length(namez6))
+
+ratingz6 <- ratings[[8]]
+    if (length(ratingz6) > length(namez6)) {
+    ratingz6 <- tail(ratingz6, length(namez6)) 
+    } else if (length(ratingz6) < length(namez6)) {
+    ratingz6<- c(ratingz6, rep(NA, length(namez6) - length(ratingz6)))
+    }
+```
+```{r}
+max_length <- max(
+  length(ca6),
+  length(producto6),
+  length(produc6),
+  length(namez6),
+  length(ratingz6),
+  length(dates[[8]]),
+  length(title[[8]]),
+  length(text[[8]])
+)
+
+ca6 <- c(ca6, rep(NA, max_length - length(ca6)))
+producto6 <- c(producto6, rep(NA, max_length - length(producto6)))
+produc6 <- c(produc6, rep(NA, max_length - length(produc6)))
+namez6 <- c(namez6, rep(NA, max_length - length(namez6)))
+ratingz6 <- c(ratingz6, rep(NA, max_length - length(ratingz6)))
+dates[[8]] <- c(dates[[8]], rep(NA, max_length - length(dates[[8]])))
+title[[8]] <- c(title[[8]], rep(NA, max_length - length(title[[8]])))
+text[[8]] <- c(text[[8]], rep(NA, max_length - length(text[[8]])))
+
+brush8 <- data.frame(Category = ca6,
+                     Product_number = producto6,
+                      Name_of_Product = produc6,
+                      Userame = namez6,
+                       Rating = ratingz6,
+                       Date = dates[[8]],
+                       Title_of_Review = title[[8]],
+                       Text_of_Review = text[[8]],
+                       stringsAsFactors = FALSE
+                       )
+head(brush8, 50)
+brush8 %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+```{r}
+nama7 <- names[[9]]
+nama7
+namez7 <- nama7[!grepl("My review on Conair Detangling Hair Brush- 3PK", nama7, ignore.case = TRUE)]
+namez7 <- namez7[-(1:2)]
+producto7 <- productnumber[[9]]
+producto7 <- rep(producto7, length.out = length(namez7))
+produc7 <- nameofproduct[[9]]
+produc7 <- rep(produc7, length.out = length(namez7))
+cater7 <- category[[9]]
+ca7 <- rep(cater7, length.out = length(namez7))
+
+ratingz7 <- ratings[[9]]
+    if (length(ratingz7) > length(namez7)) {
+    ratingz7 <- tail(ratingz7, length(namez7)) 
+    } else if (length(ratingz7) < length(namez7)) {
+    ratingz7<- c(ratingz7, rep(NA, length(namez7) - length(ratingz7)))
+    }
+```
+
+```{r}
+max_length <- max(
+  length(ca7),
+  length(producto7),
+  length(produc7),
+  length(namez7),
+  length(ratingz7),
+  length(dates[[9]]),
+  length(title[[9]]),
+  length(text[[9]])
+)
+
+ca7 <- c(ca7, rep(NA, max_length - length(ca7)))
+producto7 <- c(producto7, rep(NA, max_length - length(producto7)))
+produc7 <- c(produc7, rep(NA, max_length - length(produc7)))
+namez7 <- c(namez7, rep(NA, max_length - length(namez7)))
+ratingz7 <- c(ratingz7, rep(NA, max_length - length(ratingz7)))
+dates[[9]] <- c(dates[[9]], rep(NA, max_length - length(dates[[9]])))
+title[[9]] <- c(title[[9]], rep(NA, max_length - length(title[[9]])))
+text[[9]] <- c(text[[9]], rep(NA, max_length - length(text[[9]])))
+
+brush9 <- data.frame(Category = ca7,
+                     Product_number = producto7,
+                      Name_of_Product = produc7,
+                      Userame = namez7,
+                       Rating = ratingz7,
+                       Date = dates[[9]],
+                       Title_of_Review = title[[9]],
+                       Text_of_Review = text[[9]],
+                       stringsAsFactors = FALSE
+                       )
+head(brush9, 50)
+brush9 %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+
+```{r}
+nama8 <- names[[10]]
+namez8 <- nama8[!grepl("NA", nama8, ignore.case = TRUE)]
+namez8 <- namez8[-(1:2)]
+producto8 <- productnumber[[10]]
+producto8 <- rep(producto8, length.out = length(namez8))
+produc8 <- nameofproduct[[10]]
+produc8 <- rep(produc8, length.out = length(namez8))
+cater8 <- category[[10]]
+ca8 <- rep(cater8, length.out = length(namez8))
+
+ratingz8 <- ratings[[10]]
+    if (length(ratingz8) > length(namez8)) {
+    ratingz8 <- tail(ratingz8, length(namez8)) 
+    } else if (length(ratingz8) < length(namez8)) {
+    ratingz8<- c(ratingz8, rep(NA, length(namez8) - length(ratingz8)))
+    }
+```
+
+```{r}
+max_length <- max(
+  length(ca8),
+  length(producto8),
+  length(produc8),
+  length(namez8),
+  length(ratingz8),
+  length(dates[[10]]),
+  length(title[[10]]),
+  length(text[[10]])
+)
+
+ca8 <- c(ca8, rep(NA, max_length - length(ca8)))
+producto8 <- c(producto8, rep(NA, max_length - length(producto8)))
+produc8 <- c(produc8, rep(NA, max_length - length(produc8)))
+namez8 <- c(namez8, rep(NA, max_length - length(namez8)))
+ratingz8 <- c(ratingz8, rep(NA, max_length - length(ratingz8)))
+dates[[10]] <- c(dates[[10]], rep(NA, max_length - length(dates[[10]])))
+title[[10]] <- c(title[[10]], rep(NA, max_length - length(title[[10]])))
+text[[10]] <- c(text[[10]], rep(NA, max_length - length(text[[10]])))
+
+brush10 <- data.frame(Category = ca8,
+                     Product_number = producto8,
+                      Name_of_Product = produc8,
+                      Userame = namez8,
+                       Rating = ratingz8,
+                       Date = dates[[10]],
+                       Title_of_Review = title[[10]],
+                       Text_of_Review = text[[10]],
+                       stringsAsFactors = FALSE
+                       )
+head(brush10, 50)
+
+brush10 %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
