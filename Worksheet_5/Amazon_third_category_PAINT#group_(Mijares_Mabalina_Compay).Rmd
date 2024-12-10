@@ -1,0 +1,789 @@
+---
+title: "Amazon_third_category_PAINT#group_(Mijares_Mabalina_Compay)"
+author: "Mijares_Compay_Mabalina"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(polite)
+library(kableExtra)
+library(rmarkdown)
+library(httr)
+library(rvest)
+library(dplyr)
+library(stringr)
+library(ggplot2)
+library(knitr)
+```
+PAINT
+```{r}
+urls3 <- c('https://www.amazon.com/Shuttle-Art-Colors-Acrylic-Paint/dp/B08RYS5XNM/ref=sr_1_5?crid=2A4S4LG98IBSL&dib=eyJ2IjoiMSJ9.kT4T9ZIEkSuBjBlHEGQ2WSMrVCtFbuaN6boTU0A-H5Jp75cjsjeOmD7QAbJAKFGNA2wLRCh-I6MUIzLSN81qHOW9m06RXeuvUTQ3J2awx-4m736LwHT9VhsswlO4Mga6vlXbNMW_1JvaAx-rNpt0p_PFdrFizzgfbgEir1q9Htuq38q71jvrPnt43d68__DKIhW-PhmK_9rSygynWEV6gvVnYpq019ooMW_3CUZuQwbLfbs29srrAACFN3eHTexzSSvQfspTApWRZDxpvEeJVpegYoA1SjATIMTThW_qvcE.GFv_b5ie8MkcEgEIG5Trb7bc9HP17EcUhVuNQdtyYPA&dib_tag=se&keywords=Shuttle+Art+Acrylic+Paint%2C+50+Colors+Acrylic+Paint+Set%2C+2oz%2F60ml+Bottles%2C+Rich+Pigments%2C+Water+Proof%2C+Premium+Acrylic+Paints+for+Artists%2C+Beginners+and+Kids+on+Canvas+Rocks+Wood+Ceramic+Fabric&qid=1733815043&sprefix=shuttle+art+acrylic+paint%2C+50+colors+acrylic+paint+set%2C+2oz%2F60ml+bottles%2C+rich+pigments%2C+water+proof%2C+premium+acrylic+paints+for+artists%2C+beginners+and+kids+on+canvas+rocks+wood+ceramic+fabric+%2Caps%2C602&sr=8-5',
+           'https://www.amazon.com/Shuttle-Art-Pigments-Non-toxic-Supplies/dp/B07Z93LQDB/ref=sr_1_5?crid=PHYU4Q9GYUSF&dib=eyJ2IjoiMSJ9.pRU6kqlJVpk4DIWYRQp8ZixgGzXv9bw9hWS7iN83dnm1qYey1WZK1yd8iF9Kn8_HclvZRAtOFjjcWgXyyYthCnUH3-ULUbol2h_FhSdJmwp2xZMBtgjFA8XCzxxwRzNzgB39NNkk9FCrmwBo9lRfY4ikDjWbig6ZosrOW0gF0gWvJqWFHUuZR4sF5I-_6n7sg0UhjJ99uUqM6Pky_oxb3xFSZmeStS8oqFc7GR7uyuOvo6seXwIaKR9tFbgo64YjflPQDnTS5uOTYymkDH72DWHR-cSqDY4jk6HNEoEpt78.fgtSB_2aksZFrJQlbrD3YRnaXgvOU920GAA20u5K0Ro&dib_tag=se&keywords=shuttle+art+acrylic+paint+set%2C+36+colors+acrylic+paint+with&qid=1733815064&sprefix=shuttle+art+acrylic+paint+set%2C+36+colors+acrylic+paint+wit%2Caps%2C308&sr=8-5',
+           'https://www.amazon.com/Nicpro-Acrylic-Painting-Supplies-Surface/dp/B0C4GHXB3J/ref=sr_1_5?crid=O7MKXDFH2QW5&dib=eyJ2IjoiMSJ9.pgmqA8CmOPltC4r8LQOmF67kPBVwigWhWYjQucml19Bx7u83p4TMjaNP-me5nSkaEY8DMiClMdPiboRusAq-kY6lkiemKV-1yvkocrgzJe2cKcnre43-tjN4YlSFSw9L3LHS3xCM1C42lop99h0KLRPZfd2MDUNwRpbO5ETC4-F8eBKwNasG1KseMag-SOCfQSyaIIA7IwqUhDlphl0Ovs0frRsF8xgo4W4XjNoh07KfYY6aIEmchzx2WNnYdRArKaZ8vBvIr89XQ9_NY6iwpr8g1bsDtDMc_Gka4gReEsY.i3tbpU38AKlXMgbPOUy9Jjj7azxiqftIw2JaWdEr16I&dib_tag=se&keywords=Nicpro+24+Colors+Large+Bulk+Acrylic+Paint+Set+%288.45+oz%2C2&qid=1733815096&sprefix=nicpro+24+colors+large+bulk+acrylic+paint+set+8.45+oz%2C2%2Caps%2C299&sr=8-5',
+           'https://www.amazon.com/Washable-Watercolor-Portable-Accessories-Non-Toxic/dp/B0D6YW596W/ref=sr_1_5?crid=1GTQ4A6GNGKEW&dib=eyJ2IjoiMSJ9.fXS3uFzQBA9_WdEMicKFhGjuEvZq9WPLY4yvab60l9ACEe5qe-uFvc4GJ7bdL3_ErD4mXsvNHpMkrSIofLgD5IQ0UNXB--jUHr-q1gb751aWLJDlaVbpmvBg64JtZ-QWmesVuoq5pSg7k_KXeQYagzfDrTikI956wUDL9eDIYs3ipq8i_MY2GoHCNzLVW8FGn87aY08gRSKdTiROsSn85uNUBcjdAKPeZbT_q0-slrCay8Fa6q-YEINLKYyj_N_C5fK66U5Ap10l2blO_RfdXuQKYzHki3_RhhS6Zv9vrHM.TDQhpBExOOBYNTO82ICpay_TgJZsTYDNKIH5nJ0ubX8&dib_tag=se&keywords=50%2BColors%2BWashable%2BWatercolor%2BPaint%2BSet%2Bwith%2B6%2BBrushes%2C%2BPortable%2BTravel%2BWater%2BColor%2BKit%2Bwith%2BCarrying%2BCase%2C%2BPalette%2Band%2BAccessories%2C%2BNon-Toxic%2BArt%2BSupplies%2BGift%2Bfor%2BArtists%2BAdult%2BTeen%2BKids%2BGirls%2BBoys&qid=1733815129&sprefix=50%2Bcolors%2Bwashable%2Bwatercolor%2Bpaint%2Bset%2Bwith%2B6%2Bbrushes%2C%2Bportable%2Btravel%2Bwater%2Bcolor%2Bkit%2Bwith%2Bcarrying%2Bcase%2C%2Bpalette%2Band%2Baccessories%2C%2Bnon-toxic%2Bart%2Bsupplies%2Bgift%2Bfor%2Bartists%2Badult%2Bteen%2Bkids%2Bgirls%2Bboys%2B%2Caps%2C326&sr=8-5&th=1',
+           'https://www.amazon.com/Shuttle-Art-Colors-Acrylic-Paint/dp/B08RYS5XNM/ref=sr_1_5?crid=28ZJDNANWS9TW&dib=eyJ2IjoiMSJ9.kT4T9ZIEkSuBjBlHEGQ2WV3ajOFRrrLndNVkQ87SmtpTIQtoB6ty9dHk2FSAvYEZg0_AXJynLUkVTNitf-B23ocCdMsswHiJUfIj8A8wlP2hEFMNYwT7EuZRJpTRS9locPCFbQhTg_FaKQyMUWaSBeMXl8X3umsyYIj-tq1Xx9Eqw7xjqK6_SWlLqv8GOPT7QzNs3jAtn893GC_8WxDWrE8V8o_QQWHM5IvirALVtUraGgJXuWLy_FFK5durhGFItUXRDXPvdpnymzdMZB0w4NIEd7hExIaNdYLEA7WG6tI.WAGMVzwvgzMdy-fJbhzythz3K_t7EqcW9bdtpMLmTE4&dib_tag=se&keywords=Shuttle%2BArt%2BAcrylic%2BPaint%2C%2B50%2BColors%2BAcrylic%2BPaint%2BSet%2C%2B2&qid=1733815159&sprefix=shuttle%2Bart%2Bacrylic%2Bpaint%2C%2B50%2Bcolors%2Bacrylic%2Bpaint%2Bset%2C%2B2%2Caps%2C430&sr=8-5&th=1',
+           'https://www.amazon.com/Apple-Barrel-Acrylic-PROMOTCK-Colors/dp/B07ZPPPWPL/ref=sr_1_1?crid=CTW269C98W2O&dib=eyJ2IjoiMSJ9.7yTAIlQc7C9VzP_nZpYNMp77pwvfMc3e1S3-JIitbVqc4dXJKb0RVKeKT1c76Ed0r91OJ2VksYbevp6n_61GZcXXL-_oOQsWrEI8RNiV_I4vCY_j2s1_sYFpHHuW10Fzg3dC2i9ERVKyIOXeO8mdrxMekH744nOdWDet1NIsg6SOiYJOzEJv1vfiNXisv3FMzwJzKLBYJCCeo2ed-bHiUTQ1Tqm6Qqd-S72JbywjWD1YuhVhdDTwU7f0tM73sTGW5ZkuHqGCQI3MW6hHk9gNYwolTysW4Bx1p-Xw1rIYz2E.PratbPpq93meofb7hEGM1izZgvtJLUvvQy75zPNOUFs&dib_tag=se&keywords=Apple+Barrel%2C+Pastel+Dreams+%26+Vivid+Wonders+Collection+Acrylic+Craft+Paint%2C+PROMOTCK%2C+2+fl+oz+each%2C+18+assorted+matte+colors%2C+18+count&qid=1733815215&sprefix=apple+barrel%2C+pastel+dreams+%26+vivid+wonders+collection+acrylic+craft+paint%2C+promotck%2C+2+fl+oz+each%2C+18+assorted+matte+colors%2C+18+count+%2Caps%2C627&sr=8-1',
+           'https://www.amazon.com/Crayola-Assorted-Paint-Washable-Bottle/dp/B0044SEK0A/ref=sr_1_5?crid=1NWQAVLVSNQI3&dib=eyJ2IjoiMSJ9.QpMhVrgRJl_EryD_YhDg_rGZ-aTto_6P8wjhAMPFouMJOlUlwqGwAFMSWpjKq1SCFh64SPC1YHFeROSp1yNNXo3fA6DBm1BDZVFsLgdwhtiF4X_pc7u2nQsEuBJV37q6hD4Smj-1h-wa2xMn2-v-jgaJy-jBqoZfHiQIxqvxIDO2s9cl04b2M_drx1f7JgUQXQw1HzoSUxiQ8NSCTlR_mNWcgUa3BLnNxQ7cEsQX0lgy0ymq5fHeStLrtgQfzCPc03o-GLZlhZxDEN8pOsAfAvtbwdOpIU1hwAW-Z-nEt9U.f8zVq8tZRIFSO5gPzT2e_gPLF24PV2sz089Eegi4sT8&dib_tag=se&keywords=Crayola+Washable+Paint+%2812ct%29%2C+Bulk+Paint+Set+for+Kids%2C+N&qid=1733815242&sprefix=crayola+washable+paint+12ct+%2C+bulk+paint+set+for+kids%2C+n%2Caps%2C304&sr=8-5',
+           'https://amazon.com/Shuttle-Art-Including-Pigmented-Beginners/dp/B0BKFLSYQF/ref=sr_1_5?crid=1TLKLNZYNT3L3&dib=eyJ2IjoiMSJ9.hdmdS6JX_Ac-01_oKk-Fwd1D19Cqg-Zy0kkuZB1A1TypZ7m-RN6bqAG9s2u2v-vx_y_NA-2Y92Rwe-O8yYeX3ujgYYrrNXoB7NrRlw85erFAET-WB_yaQfNz2fMoTBgVLr_uKozpMuff6xFABopIZdAp-tdxirh8IDqABm9vCjGDQwAqh0p-0WsptFQxJEmhWxctdaE4094yELU6RdD2odMUKJKfAxDRjI5p1ZbzTIi6CkB7gBWghguSxaGye6Jtadc8N0LX6_mvfFpYVfNwF3uPIe_zYxiuY1_PqWBgKJE.kADsjmiVf6rPW8xL6fwmV10otUxBLspc59ZQYiOikxg&dib_tag=se&keywords=72+Pack+Acrylic+Paint+Set%2C+Shuttle+Art+60+Colors+Acrylic&qid=1733815343&sprefix=crayola+washable+paint+12ct+%2C+bulk+paint+set+for+kids%2C+n%2Caps%2C794&sr=8-5',
+           'https://www.amazon.com/Shuttle-Art-Pigments-Viscosity-Beginners/dp/B0C3V135YP/ref=sr_1_5?crid=1DGY4M4GDA4KC&dib=eyJ2IjoiMSJ9.0H99f6C_SKBeH0sXeTLFVdib2xFhV5Bbmhz9wRAne3ERlT2U4LS_XHXfVtPsMSGLpqcKS6VkdR5RJxPMldSrToxXTI15wE9yAVJoTINrdH2mtPfnZqOxxQZvrSgMIUun3FIDFMMHCZyxw0_7L56ki2_ft66Hz9ZqUxZUndIiM-DtJtH5woX_sdEfiH9_aSpwiDrdULHISB9sG3Mc9mf6AAEA4GfIYtkYwEaOzIME-ekjuL_L-JEbXYRZ5roRyRNgeQfBrimIHO7J4asbHpu0m4--ZNxLCaHwydF95jHFk50.G1m2BCHechyen-I6_htBS80mEEJ_71RIz9ocdElK3t0&dib_tag=se&keywords=Shuttle+Art+Acrylic+Paint%2C+12+Colors+Acrylic+Paint+Large+Bottle+Set%2C+473ml%2F16oz+Each%2C+Rich+Pigments%2C+High+Viscosity%2C+Bulk+Paint+for+Artists%2C+Beginners+and+Kids+on+Rocks+Crafts+Canvas+Wood+Ceramic&qid=1733815384&sprefix=72+pack+acrylic+paint+set%2C+shuttle+art+60+colors+acrylic%2Caps%2C386&sr=8-5',
+           'https://www.amazon.com/PHINOYA-Acrylic-Container-Birthday-Classroom/dp/B0CPSWM4V5/ref=sr_1_5?crid=W2QTS8OUHHF2&dib=eyJ2IjoiMSJ9.-rxpzVXOeT4y5vxHWVPh-_3wBzYMBqVhz8u1c7amJbFFgl38-LNmJbP-jA997P2Zg9XBq8ZFBQQr7Jw_YXAGEfyqUW3XsMREoIRteB1Z4NIeUOpXvzNI3gagAUo0nWBfCPHt5_s7u9CuYficrMWo8sxkS0MqgUPip9ZrWo0A11R9iKuo91BCedShuNNhu4ACNXSv-Cohx3rtK57dWDx3PNMsbyh0AU_w75ZKOwT25vsNvtEWI-sovH8hHZMWuDmLKxUQp7N3XmEEBj6V0RKxvS_ka1ZPK9Cwh7npwyDHcGs.GNKaS5fxorJUL3aBQi-lB6ajuIFX0AInGWSjuuxTyx4&dib_tag=se&keywords=PHINOYA+20+Pack+Mini+Acrylic+Paint+Set%2C12+Color+Acrylic&qid=1733815408&sprefix=phinoya+20+pack+mini+acrylic+paint+set%2C12+color+acrylic%2Caps%2C319&sr=8-5')
+
+nameofproduct3 <- vector("list", length(urls3))
+names3 <- vector("list", length(urls3))
+ratings3 <- vector("list", length(urls3))
+dates3 <- vector("list", length(urls3))
+title3 <- vector("list", length(urls3))
+text3 <- vector("list", length(urls3))
+n3 <- vector("list", length(urls3))
+```
+
+```{r}
+df <- list()
+
+for (i in seq_along(urls3)) {
+    session3 <- bow(urls3[i], user_agent = "Educational")
+    webpage3 <- scrape(session3)
+  
+    
+    nam3 <- webpage3 %>% html_nodes(".a-profile-name") %>% html_text()
+    nam3 <- nam3[!grepl("NA", nam3, ignore.case = TRUE)]
+    nam3 <- nam3[nam3 != ""]
+    n3[[i]] <- nam3
+    name3 <- c() 
+    non_amazon_seen3 <- FALSE  
+    for (na3 in nam3) {
+      if (na3 == "Amazon Customer") {
+
+        if (non_amazon_seen3) {
+          name3 <- c(name3, na3)
+        }
+      } else {
+        name3 <- c(name3, na3)
+        non_amazon_seen3 <- TRUE
+        }
+    }
+    name3 <- name3[!duplicated(name3) | name3 == "Amazon Customer"]
+    names3[[i]] <- name3
+    
+        nameofproduct3[[i]] <-  webpage3 %>%
+  html_nodes('.a-size-large.product-title-word-break') %>%
+  html_text()
+    nameofproduct3[[i]] <- rep(nameofproduct3[[i]], length.out = length(names3[[i]]))
+    
+    rate3 <- webpage3 %>% html_nodes(".a-icon-alt") %>% html_text()
+    rati3 <- rate3[!grepl("Previous page of related Sponsored Products|Next page of related Sponsored Products|Previous page|Next page", rate3, ignore.case = TRUE)]
+    rat3 <- gsub(" out of 5 stars", "", rati3)
+    rats3 <- rat3
+    if (length(rats3) > length(name3)) {
+    rats3 <- tail(rats3, length(name3)) 
+    } else if (length(rats3) < length(name3)) {
+    rats3 <- c(rats3, rep(NA, length(name3) - length(rats3)))
+    }
+
+    ratings3[[i]] <- rats3
+    
+    dat3 <- webpage3 %>% html_nodes(".a-size-base.a-color-secondary.review-date") %>% html_text()
+    date3 <- gsub("Reviewed.*on ", "", dat3)
+    dates3[[i]] <- date3
+
+    titl3 <- webpage3 %>% html_nodes(".a-size-base.review-title.a-color-base.review-title-content.a-text-bold") %>% html_text()
+    tit3 <- gsub("Reviewed.*on ", "", titl3)
+    ti3 <- gsub(".*stars\\s*", "", tit3)
+    t3 <- gsub("\\s+", " ", ti3)
+    title3[[i]] <- t3
+
+    tex3 <- webpage3 %>% html_nodes(".a-expander-content.reviewText.review-text-content.a-expander-partial-collapse-content") %>% html_text()
+    te3 <- gsub("\\n", " ", tex3)
+    t3 <- gsub("\\s+", " ", te3)
+    text3[[i]] <- trimws(t3)
+}
+```
+```{r}
+cate3 <- c("Category 1: BRUSH", "Category 2: CANVAS", "Category 3: PAINT", "Category 4", "Category 5")
+category3 <- vector("list", length(cate3))
+for (i in seq_along(cate3)) {
+    category3[[i]] <- cate3[i]
+}
+```
+```{r}
+for (i in seq_along(cate3)) {
+    category3[[i]] <- rep(category3[[i]], length.out = length(names3[[i]]))
+}
+```
+```{r}
+productnumbe3 <- c("Product 1", "Product 2", "Product 3", "Product 4", "Product 5", "Product 6", "Product 7", "Product 8", "Product 9", "Product 10")
+productnumber3 <- vector("list", length(productnumbe3))
+for (i in seq_along(productnumbe3)) {
+    productnumber3[[i]] <- productnumbe3[i]
+}
+for (i in seq_along(urls3)) {
+    productnumber3[[i]] <- rep(productnumber3[[i]], length.out = length(names3[[i]]))
+}
+```
+```{r}
+urls3b <- c('https://amazon.com/Shuttle-Art-Including-Pigmented-Beginners/dp/B0BKFLSYQF/ref=sr_1_5?crid=1TLKLNZYNT3L3&dib=eyJ2IjoiMSJ9.hdmdS6JX_Ac-01_oKk-Fwd1D19Cqg-Zy0kkuZB1A1TypZ7m-RN6bqAG9s2u2v-vx_y_NA-2Y92Rwe-O8yYeX3ujgYYrrNXoB7NrRlw85erFAET-WB_yaQfNz2fMoTBgVLr_uKozpMuff6xFABopIZdAp-tdxirh8IDqABm9vCjGDQwAqh0p-0WsptFQxJEmhWxctdaE4094yELU6RdD2odMUKJKfAxDRjI5p1ZbzTIi6CkB7gBWghguSxaGye6Jtadc8N0LX6_mvfFpYVfNwF3uPIe_zYxiuY1_PqWBgKJE.kADsjmiVf6rPW8xL6fwmV10otUxBLspc59ZQYiOikxg&dib_tag=se&keywords=72+Pack+Acrylic+Paint+Set%2C+Shuttle+Art+60+Colors+Acrylic&qid=1733815343&sprefix=crayola+washable+paint+12ct+%2C+bulk+paint+set+for+kids%2C+n%2Caps%2C794&sr=8-5',
+           'https://www.amazon.com/Shuttle-Art-Pigments-Viscosity-Beginners/dp/B0C3V135YP/ref=sr_1_5?crid=1DGY4M4GDA4KC&dib=eyJ2IjoiMSJ9.0H99f6C_SKBeH0sXeTLFVdib2xFhV5Bbmhz9wRAne3ERlT2U4LS_XHXfVtPsMSGLpqcKS6VkdR5RJxPMldSrToxXTI15wE9yAVJoTINrdH2mtPfnZqOxxQZvrSgMIUun3FIDFMMHCZyxw0_7L56ki2_ft66Hz9ZqUxZUndIiM-DtJtH5woX_sdEfiH9_aSpwiDrdULHISB9sG3Mc9mf6AAEA4GfIYtkYwEaOzIME-ekjuL_L-JEbXYRZ5roRyRNgeQfBrimIHO7J4asbHpu0m4--ZNxLCaHwydF95jHFk50.G1m2BCHechyen-I6_htBS80mEEJ_71RIz9ocdElK3t0&dib_tag=se&keywords=Shuttle+Art+Acrylic+Paint%2C+12+Colors+Acrylic+Paint+Large+Bottle+Set%2C+473ml%2F16oz+Each%2C+Rich+Pigments%2C+High+Viscosity%2C+Bulk+Paint+for+Artists%2C+Beginners+and+Kids+on+Rocks+Crafts+Canvas+Wood+Ceramic&qid=1733815384&sprefix=72+pack+acrylic+paint+set%2C+shuttle+art+60+colors+acrylic%2Caps%2C386&sr=8-5',
+           'https://www.amazon.com/PHINOYA-Acrylic-Container-Birthday-Classroom/dp/B0CPSWM4V5/ref=sr_1_5?crid=W2QTS8OUHHF2&dib=eyJ2IjoiMSJ9.-rxpzVXOeT4y5vxHWVPh-_3wBzYMBqVhz8u1c7amJbFFgl38-LNmJbP-jA997P2Zg9XBq8ZFBQQr7Jw_YXAGEfyqUW3XsMREoIRteB1Z4NIeUOpXvzNI3gagAUo0nWBfCPHt5_s7u9CuYficrMWo8sxkS0MqgUPip9ZrWo0A11R9iKuo91BCedShuNNhu4ACNXSv-Cohx3rtK57dWDx3PNMsbyh0AU_w75ZKOwT25vsNvtEWI-sovH8hHZMWuDmLKxUQp7N3XmEEBj6V0RKxvS_ka1ZPK9Cwh7npwyDHcGs.GNKaS5fxorJUL3aBQi-lB6ajuIFX0AInGWSjuuxTyx4&dib_tag=se&keywords=PHINOYA+20+Pack+Mini+Acrylic+Paint+Set%2C12+Color+Acrylic&qid=1733815408&sprefix=phinoya+20+pack+mini+acrylic+paint+set%2C12+color+acrylic%2Caps%2C319&sr=8-5')
+nameofproduct3b <- vector("list", length(urls3b))
+names3b <- vector("list", length(urls3b))
+ratings3b <- vector("list", length(urls3b))
+dates3b <- vector("list", length(urls3b))
+title3b <- vector("list", length(urls3b))
+text3b <- vector("list", length(urls3b))
+n3b <- vector("list", length(urls3b))
+```
+
+```{r}
+df <- list()
+
+for (i in seq_along(urls3b)) {
+    session3b <- bow(urls3b[i], user_agent = "Educational")
+    webpage3b <- scrape(session3b)
+  
+    
+    nam3b <- webpage3b %>% html_nodes(".a-profile-name") %>% html_text()
+    nam3b <- nam3b[!grepl("hair care routine for BROKEN DAMAGED hair|Amazon Customer", nam3b, ignore.case = TRUE)]
+    nam3b <- nam3b[nam3b != ""]
+    n3b[[i]] <- nam3b
+    name3b <- c() 
+    non_amazon_seen3b <- FALSE  
+    for (na3b in nam3b) {
+      if (na3b == "Amazon Customer") {
+
+        if (non_amazon_seen3b) {
+          name3b <- c(name3b, na3b)
+        }
+      } else {
+        name3b <- c(name3b, na3b)
+        non_amazon_seen3b <- TRUE
+        }
+    }
+    name3b <- name3b[!duplicated(name3b) | name3b == "Amazon Customer"]
+    names3b[[i]] <- name3b
+    
+        nameofproduct3b[[i]] <-  webpage3b %>%
+  html_nodes('.a-size-large.product-title-word-break') %>%
+  html_text()
+    nameofproduct3b[[i]] <- rep(nameofproduct3b[[i]], length.out = length(names3b[[i]]))
+    
+    rate3b <- webpage3b %>% html_nodes(".a-icon-alt") %>% html_text()
+    rati3b <- rate3b[!grepl("Previous page of related Sponsored Products|Next page of related Sponsored Products|Previous page|Next page", rate3b, ignore.case = TRUE)]
+    rat3b <- gsub(" out of 5 stars", "", rati3b)
+    rats3b <- rat3b
+    if (length(rats3b) > length(name3b)) {
+    rats3b <- tail(rats3b, length(name3b)) 
+    } else if (length(rats3b) < length(name3b)) {
+    rats3b <- c(rats3b, rep(NA, length(name3b) - length(rats3b)))
+    }
+    ratings3b[[i]] <- rats3b
+    dat3b <- webpage3b %>% html_nodes(".a-size-base.a-color-secondary.review-date") %>% html_text()
+    date3b <- gsub("Reviewed.*on ", "", dat3b)
+    dates3b[[i]] <- date3b
+
+    titl3b <- webpage3b %>% html_nodes(".a-size-base.review-title.a-color-base.review-title-content.a-text-bold") %>% html_text()
+    tit3b <- gsub("Reviewed.*on ", "", titl3b)
+    ti3b <- gsub(".*stars\\s*", "", tit3b)
+    t3b <- gsub("\\s+", " ", ti3b)
+    title3b[[i]] <- t3b
+
+    tex3b <- webpage3b %>% html_nodes(".a-expander-content.reviewText.review-text-content.a-expander-partial-collapse-content") %>% html_text()
+    te3b <- gsub("\\n", " ", tex3b)
+    t3b <- gsub("\\s+", " ", te3b)
+    text3b[[i]] <- trimws(t3b)
+}
+```
+
+```{r}
+cate3b <- c("Category 1: WATCH", "Category 2: SKINCARE", "Category 3: PAINT", "Category 4:", "Category 5:")
+category3b <- vector("list", length(cate3b))
+for (i in seq_along(cate3b)) {
+    category3b[[i]] <- cate3b[i]
+}
+```
+
+```{r}
+for (i in seq_along(urls3b)) {
+    category3b[[i]] <- rep(category3b[[i]], length.out = length(names3b[[i]]))
+}
+```
+
+```{r}
+productnumbe3b <- c("Product 8", "Product 9", "Product 10")
+productnumber3b <- vector("list", length(productnumbe3b))
+for (i in seq_along(productnumbe3b)) {
+    productnumber3b[[i]] <- productnumbe3b[i]
+}
+```
+
+```{r}
+for (i in seq_along(productnumber3b)) {
+    productnumber3b[[i]] <- rep(productnumber3b[[i]], length.out = length(names3b[[i]]))
+}
+```
+
+```{r}
+nama31 <- names3[[1]]
+namez31 <- nama31[!grepl("Shuttle Art Acrylic Paint Set!", nama31, ignore.case = TRUE)]
+namez31 <- namez31[-(1:2)]
+producto31 <- productnumber3[[1]]
+producto31 <- rep(producto31, length.out = length(namez31))
+produc31 <- nameofproduct3[[1]]
+produc31 <- rep(produc31, length.out = length(namez31))
+cater31 <- category3[[3]]
+ca31 <- rep(cater31, length.out = length(namez31))
+
+ratingz31 <- ratings3[[1]]
+    if (length(ratingz31) > length(namez31)) {
+    ratingz31 <- tail(ratingz31, length(namez31)) 
+    } else if (length(ratingz31) < length(namez31)) {
+    ratingz31 <- c(ratingz31, rep(NA, length(namez31) - length(ratingz31)))
+    }
+```
+```{r}
+max_length <- max(
+  length(ca31),
+  length(producto31),
+  length(produc31),
+  length(namez31),
+  length(ratingz31),
+  length(dates3[[1]]),
+  length(title3[[1]]),
+  length(text3[[1]])
+)
+
+ca31 <- c(ca31, rep(NA, max_length - length(ca31)))
+producto31 <- c(producto31, rep(NA, max_length - length(producto31)))
+produc31 <- c(produc31, rep(NA, max_length - length(produc31)))
+namez31 <- c(namez31, rep(NA, max_length - length(namez31)))
+ratingz31 <- c(ratingz31, rep(NA, max_length - length(ratingz31)))
+dates3[[1]] <- c(dates3[[1]], rep(NA, max_length - length(dates3[[1]])))
+title3[[1]] <- c(title3[[1]], rep(NA, max_length - length(title3[[1]])))
+text3[[1]] <- c(text3[[1]], rep(NA, max_length - length(text3[[1]])))
+
+paint1 <- data.frame(Category = ca31,
+                     Product_number = producto31,
+                      Name_of_Product = produc31,
+                      Userame = namez31,
+                       Rating = ratingz31,
+                       Date = dates3[[1]],
+                       Title_of_Review = title3[[1]],
+                       Text_of_Review = text3[[1]],
+                       stringsAsFactors = FALSE
+                       )
+head(paint1, 50)
+paint1 %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+```{r}
+nama32 <- names3[[2]]
+namez32 <- nama32[!grepl("Gift Choice for Christmas - Acryli Paint Set|Amazon Customer", nama32, ignore.case = TRUE)]
+namez32 <- namez32[-(1:2)]
+producto32 <- productnumber3[[2]]
+producto32 <- rep(producto32, length.out = length(namez32))
+produc32 <- nameofproduct3[[2]]
+produc32 <- rep(produc32, length.out = length(namez32))
+cater32 <- category3[[3]]
+ca32 <- rep(cater32, length.out = length(namez32))
+
+ratingz32 <- ratings3[[2]]
+    if (length(ratingz32) > length(namez32)) {
+    ratingz32 <- tail(ratingz32, length(namez32)) 
+    } else if (length(ratingz32) < length(namez32)) {
+    ratingz32 <- c(ratingz32, rep(NA, length(namez32) - length(ratingz32)))
+    }
+```
+
+```{r}
+max_length <- max(
+  length(ca32),
+  length(producto32),
+  length(produc32),
+  length(namez32),
+  length(ratingz32),
+  length(dates3[[2]]),
+  length(title3[[2]]),
+  length(text3[[2]])
+)
+
+ca32 <- c(ca32, rep(NA, max_length - length(ca32)))
+producto32 <- c(producto32, rep(NA, max_length - length(producto32)))
+produc32 <- c(produc32, rep(NA, max_length - length(produc32)))
+namez32 <- c(namez32, rep(NA, max_length - length(namez32)))
+ratingz32 <- c(ratingz32, rep(NA, max_length - length(ratingz32)))
+dates3[[2]] <- c(dates3[[2]], rep(NA, max_length - length(dates3[[2]])))
+title3[[2]] <- c(title3[[2]], rep(NA, max_length - length(title3[[2]])))
+text3[[2]] <- c(text3[[2]], rep(NA, max_length - length(text3[[2]])))
+
+paint2 <- data.frame(Category = ca32,
+                     Product_number = producto32,
+                      Name_of_Product = produc32,
+                      Userame = namez32,
+                       Rating = ratingz32,
+                       Date = dates3[[2]],
+                       Title_of_Review = title3[[2]],
+                       Text_of_Review = text3[[2]],
+                       stringsAsFactors = FALSE
+                       )
+head(paint2, 50)
+paint2 %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+
+```{r}
+nama33 <- names3[[3]]
+namez33 <- nama33[!grepl("Nicpro 24 Colors Large Bulk Acrylic Paint Set|Amazon Customer", nama33, ignore.case = TRUE)]
+namez33 <- namez33[-(1:2)]
+producto33 <- productnumber3[[3]]
+producto33 <- rep(producto33, length.out = length(namez33))
+produc33 <- nameofproduct3[[3]]
+produc33 <- rep(produc33, length.out = length(namez33))
+cater33 <- category3[[3]]
+ca33 <- rep(cater33, length.out = length(namez33))
+
+ratingz33 <- ratings3[[3]]
+    if (length(ratingz33) > length(namez33)) {
+    ratingz33 <- tail(ratingz33, length(namez33)) 
+    } else if (length(ratingz33) < length(namez33)) {
+    ratingz33<- c(ratingz33, rep(NA, length(namez33) - length(ratingz33)))
+    }
+```
+
+```{r}
+max_length <- max(
+  length(ca33),
+  length(producto33),
+  length(produc33),
+  length(namez33),
+  length(ratingz33),
+  length(dates3[[3]]),
+  length(title3[[3]]),
+  length(text3[[3]])
+)
+
+ca33 <- c(ca33, rep(NA, max_length - length(ca33)))
+producto33 <- c(producto33, rep(NA, max_length - length(producto33)))
+produc33 <- c(produc33, rep(NA, max_length - length(produc33)))
+namez33 <- c(namez33, rep(NA, max_length - length(namez33)))
+ratingz33 <- c(ratingz33, rep(NA, max_length - length(ratingz33)))
+dates3[[3]] <- c(dates3[[3]], rep(NA, max_length - length(dates3[[3]])))
+title3[[3]] <- c(title3[[3]], rep(NA, max_length - length(title3[[3]])))
+text3[[3]] <- c(text3[[3]], rep(NA, max_length - length(text3[[3]])))
+
+paint3 <- data.frame(Category = ca33,
+                     Product_number = producto33,
+                      Name_of_Product = produc33,
+                      Userame = namez33,
+                       Rating = ratingz33,
+                       Date = dates3[[3]],
+                       Title_of_Review = title3[[3]],
+                       Text_of_Review = text3[[3]],
+                       stringsAsFactors = FALSE
+                       )
+head(paint3, 50)
+
+paint3 %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+
+```{r}
+nama34 <- names3[[4]]
+namez34 <- nama34[!grepl("NA", nama34, ignore.case = TRUE)]
+namez34 <- namez34[-(1:2)]
+producto34 <- productnumber3[[4]]
+producto34 <- rep(producto34, length.out = length(namez34))
+produc34 <- nameofproduct3[[4]]
+produc34 <- rep(produc34, length.out = length(namez34))
+cater34 <- category3[[3]]
+ca34 <- rep(cater34, length.out = length(namez34))
+
+ratingz34 <- ratings3[[4]]
+    if (length(ratingz34) > length(namez34)) {
+    ratingz34 <- tail(ratingz34, length(namez34)) 
+    } else if (length(ratingz34) < length(namez34)) {
+    ratingz34<- c(ratingz34, rep(NA, length(namez34) - length(ratingz34)))
+    }
+```
+
+```{r}
+max_length <- max(
+  length(ca34),
+  length(producto34),
+  length(produc34),
+  length(namez34),
+  length(ratingz34),
+  length(dates3[[4]]),
+  length(title3[[4]]),
+  length(text3[[4]])
+)
+
+ca34 <- c(ca34, rep(NA, max_length - length(ca34)))
+producto34 <- c(producto34, rep(NA, max_length - length(producto34)))
+produc34 <- c(produc34, rep(NA, max_length - length(produc34)))
+namez34 <- c(namez34, rep(NA, max_length - length(namez34)))
+ratingz34 <- c(ratingz34, rep(NA, max_length - length(ratingz34)))
+dates3[[4]] <- c(dates3[[4]], rep(NA, max_length - length(dates3[[4]])))
+title3[[4]] <- c(title3[[4]], rep(NA, max_length - length(title3[[4]])))
+text3[[4]] <- c(text3[[4]], rep(NA, max_length - length(text3[[4]])))
+
+paint4 <- data.frame(Category = ca34,
+                     Product_number = producto34,
+                      Name_of_Product = produc34,
+                      Userame = namez34,
+                       Rating = ratingz34,
+                       Date = dates3[[4]],
+                       Title_of_Review = title3[[4]],
+                       Text_of_Review = text3[[4]],
+                       stringsAsFactors = FALSE
+                       )
+head(paint4, 50)
+
+paint4 %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+
+```{r}
+nama35 <- names3[[5]]
+namez35 <- nama35[!grepl("Shuttle Art Acrylic Paint Set!|Amazon Customer", nama35, ignore.case = TRUE)]
+namez35 <- namez35[-(1:2)]
+producto35 <- productnumber3[[5]]
+producto35 <- rep(producto35, length.out = length(namez35))
+produc35 <- nameofproduct3[[5]]
+produc35 <- rep(produc35, length.out = length(namez35))
+cater35 <- category3[[3]]
+ca35 <- rep(cater35, length.out = length(namez35))
+
+ratingz35 <- ratings3[[5]]
+    if (length(ratingz35) > length(namez35)) {
+    ratingz35 <- tail(ratingz35, length(namez35)) 
+    } else if (length(ratingz3) < length(namez3)) {
+    ratingz35 <- c(ratingz35, rep(NA, length(namez35) - length(ratingz35)))
+    }
+```
+
+```{r}
+max_length <- max(
+  length(ca35),
+  length(producto35),
+  length(produc35),
+  length(namez35),
+  length(ratingz35),
+  length(dates3[[5]]),
+  length(title3[[5]]),
+  length(text3[[5]])
+)
+
+ca35 <- c(ca35, rep(NA, max_length - length(ca35)))
+producto35 <- c(producto35, rep(NA, max_length - length(producto35)))
+produc35 <- c(produc35, rep(NA, max_length - length(produc35)))
+namez35 <- c(namez35, rep(NA, max_length - length(namez35)))
+ratingz35 <- c(ratingz35, rep(NA, max_length - length(ratingz35)))
+dates3[[5]] <- c(dates3[[5]], rep(NA, max_length - length(dates3[[5]])))
+title3[[5]] <- c(title3[[5]], rep(NA, max_length - length(title3[[5]])))
+text3[[5]] <- c(text3[[5]], rep(NA, max_length - length(text3[[5]])))
+paint5 <- data.frame(Category = ca35,
+                     Product_number = producto35,
+                      Name_of_Product = produc35,
+                      Userame = namez35,
+                       Rating = ratingz35,
+                       Date = dates3[[5]],
+                       Title_of_Review = title3[[5]],
+                       Text_of_Review = text3[[5]],
+                       stringsAsFactors = FALSE
+                       )
+head(paint5, 50)
+paint5 %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+
+```{r}
+nama36 <- names3[[6]]
+namez36 <- nama36[!grepl("Apple Barrel Acrylic Paint Set|Amazon Customer", nama36, ignore.case = TRUE)]
+namez36 <- namez36[-(1:2)]
+producto36 <- productnumber3[[6]]
+producto36 <- rep(producto36, length.out = length(namez36))
+produc36 <- nameofproduct3[[6]]
+produc36 <- rep(produc36, length.out = length(namez36))
+cater36 <- category3[[3]]
+ca36 <- rep(cater36, length.out = length(namez36))
+
+ratingz36 <- ratings3[[6]]
+    if (length(ratingz36) > length(namez36)) {
+    ratingz36 <- tail(ratingz36, length(namez36)) 
+    } else if (length(ratingz36) < length(namez36)) {
+    ratingz36 <- c(ratingz36, rep(NA, length(namez36) - length(ratingz36)))
+    }
+```
+
+```{r}
+max_length <- max(
+  length(ca36),
+  length(producto36),
+  length(produc36),
+  length(namez36),
+  length(ratingz36),
+  length(dates3[[6]]),
+  length(title3[[6]]),
+  length(text3[[6]])
+)
+
+ca36 <- c(ca36, rep(NA, max_length - length(ca36)))
+producto36 <- c(producto36, rep(NA, max_length - length(producto36)))
+produc36 <- c(produc36, rep(NA, max_length - length(produc36)))
+namez36 <- c(namez36, rep(NA, max_length - length(namez36)))
+ratingz36 <- c(ratingz36, rep(NA, max_length - length(ratingz36)))
+dates3[[6]] <- c(dates3[[6]], rep(NA, max_length - length(dates3[[6]])))
+title3[[6]] <- c(title3[[6]], rep(NA, max_length - length(title3[[6]])))
+text3[[6]] <- c(text3[[6]], rep(NA, max_length - length(text3[[6]])))
+
+paint6 <- data.frame(Category = ca36,
+                     Product_number = producto36,
+                      Name_of_Product = produc36,
+                      Userame = namez36,
+                       Rating = ratingz36,
+                       Date = dates3[[6]],
+                       Title_of_Review = title3[[6]],
+                       Text_of_Review = text3[[6]],
+                       stringsAsFactors = FALSE
+                       )
+head(paint6, 50)
+paint6 %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+
+```{r}
+nama37 <- names3[[7]]
+namez37 <- nama37[!grepl("Our Take On This Crayola Washable Paint!|Amazon Customer", nama37, ignore.case = TRUE)]
+namez37 <- namez37[-(1:2)]
+producto37 <- productnumber3[[7]]
+producto37 <- rep(producto37, length.out = length(namez37))
+produc37 <- nameofproduct3[[7]]
+produc37 <- rep(produc37, length.out = length(namez37))
+cater37 <- category3[[3]]
+ca37 <- rep(cater37, length.out = length(namez37))
+
+ratingz37 <- ratings3[[7]]
+    if (length(ratingz37) > length(namez37)) {
+    ratingz37 <- tail(ratingz37, length(namez37)) 
+    } else if (length(ratingz3) < length(namez3)) {
+    ratingz37 <- c(ratingz37, rep(NA, length(namez37) - length(ratingz37)))
+    }
+```
+
+
+```{r}
+max_length <- max(
+  length(ca37),
+  length(producto37),
+  length(produc37),
+  length(namez37),
+  length(ratingz37),
+  length(dates3[[7]]),
+  length(title3[[7]]),
+  length(text3[[7]])
+)
+
+ca37 <- c(ca37, rep(NA, max_length - length(ca37)))
+producto37 <- c(producto37, rep(NA, max_length - length(producto37)))
+produc37 <- c(produc37, rep(NA, max_length - length(produc37)))
+namez37 <- c(namez37, rep(NA, max_length - length(namez37)))
+ratingz37 <- c(ratingz37, rep(NA, max_length - length(ratingz37)))
+dates3[[7]] <- c(dates3[[7]], rep(NA, max_length - length(dates3[[7]])))
+title3[[7]] <- c(title3[[7]], rep(NA, max_length - length(title3[[7]])))
+text3[[7]] <- c(text3[[7]], rep(NA, max_length - length(text3[[7]])))
+
+paint7 <- data.frame(Category = ca37,
+                     Product_number = producto37,
+                      Name_of_Product = produc37,
+                      Userame = namez37,
+                       Rating = ratingz37,
+                       Date = dates3[[7]],
+                       Title_of_Review = title3[[7]],
+                       Text_of_Review = text3[[7]],
+                       stringsAsFactors = FALSE
+                       )
+head(paint7, 50)
+paint7 %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+
+```{r}
+nama38 <- names3b[[1]]
+namez38 <- nama38[!grepl("Shuttle Art Acrylic Paint Set!", nama38, ignore.case = TRUE)]
+namez38 <- namez38[-(1:2)]
+producto38 <- productnumber3b[[1]]
+producto38 <- rep(producto38, length.out = length(namez38))
+produc38 <- nameofproduct3b[[1]]
+produc38 <- rep(produc38, length.out = length(namez38))
+cater38 <- category3b[[3]]
+ca38 <- rep(cater38, length.out = length(namez38))
+
+ratingz38 <- ratings3b[[1]]
+    if (length(ratingz38) > length(namez38)) {
+    ratingz38 <- tail(ratingz38, length(namez38)) 
+    } else if (length(ratingz38) < length(namez38)) {
+    ratingz38<- c(ratingz38, rep(NA, length(namez38) - length(ratingz38)))
+    }
+```
+
+```{r}
+max_length <- max(
+  length(ca38),
+  length(producto38),
+  length(produc38),
+  length(namez38),
+  length(ratingz38),
+  length(dates3b[[1]]),
+  length(title3b[[1]]),
+  length(text3b[[1]])
+)
+
+ca38 <- c(ca38, rep(NA, max_length - length(ca38)))
+producto38 <- c(producto38, rep(NA, max_length - length(producto38)))
+produc38 <- c(produc38, rep(NA, max_length - length(produc38)))
+namez38 <- c(namez38, rep(NA, max_length - length(namez38)))
+ratingz38 <- c(ratingz38, rep(NA, max_length - length(ratingz38)))
+dates3b[[1]] <- c(dates3b[[1]], rep(NA, max_length - length(dates3b[[1]])))
+title3b[[1]] <- c(title3b[[1]], rep(NA, max_length - length(title3b[[1]])))
+text3b[[1]] <- c(text3b[[1]], rep(NA, max_length - length(text3b[[1]])))
+
+paint8 <- data.frame(Category = ca38,
+                     Product_number = producto38,
+                      Name_of_Product = produc38,
+                      Userame = namez38,
+                       Rating = ratingz38,
+                       Date = dates3b[[1]],
+                       Title_of_Review = title3b[[1]],
+                       Text_of_Review = text3b[[1]],
+                       stringsAsFactors = FALSE
+                       )
+head(paint8, 50)
+paint8 %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+
+```{r}
+nama39 <- names3b[[2]]
+namez39 <- nama39[!grepl("Victoria's Secret Tease", nama39, ignore.case = TRUE)]
+namez39 <- namez39[-(1:2)]
+producto39 <- productnumber3b[[2]]
+producto39 <- rep(producto39, length.out = length(namez39))
+produc39 <- nameofproduct3b[[2]]
+produc39 <- rep(produc39, length.out = length(namez39))
+cater39 <- category3b[[3]]
+ca39 <- rep(cater39, length.out = length(namez39))
+
+ratingz39 <- ratings3b[[2]]
+    if (length(ratingz39) > length(namez39)) {
+    ratingz39 <- tail(ratingz39, length(namez39)) 
+    } else if (length(ratingz39) < length(namez39)) {
+    ratingz39 <- c(ratingz39, rep(NA, length(namez39) - length(ratingz39)))
+    }
+```
+
+```{r}
+max_length <- max(
+  length(ca39),
+  length(producto39),
+  length(produc39),
+  length(namez39),
+  length(ratingz39),
+  length(dates3b[[2]]),
+  length(title3b[[2]]),
+  length(text3b[[2]])
+)
+
+ca39 <- c(ca39, rep(NA, max_length - length(ca39)))
+producto39 <- c(producto39, rep(NA, max_length - length(producto39)))
+produc39 <- c(produc39, rep(NA, max_length - length(produc39)))
+namez39 <- c(namez39, rep(NA, max_length - length(namez39)))
+ratingz39 <- c(ratingz39, rep(NA, max_length - length(ratingz39)))
+dates3b[[2]] <- c(dates3b[[2]], rep(NA, max_length - length(dates3b[[2]])))
+title3b[[2]] <- c(title3b[[2]], rep(NA, max_length - length(title3b[[2]])))
+text3b[[2]] <- c(text3b[[2]], rep(NA, max_length - length(text3b[[2]])))
+
+paint9 <- data.frame(Category = ca39,
+                     Product_number = producto39,
+                      Name_of_Product = produc39,
+                      Userame = namez39,
+                       Rating = ratingz39,
+                       Date = dates3b[[2]],
+                       Title_of_Review = title3b[[2]],
+                       Text_of_Review = text3b[[2]],
+                       stringsAsFactors = FALSE
+                       )
+head(paint9, 50)
+paint9 %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+
+```{r}
+nama310 <- names3b[[3]]
+namez310 <- nama310[!grepl("NA", nama310, ignore.case = TRUE)]
+namez310 <- namez310[-(1:2)]
+producto310 <- productnumber3b[[3]]
+producto310 <- rep(producto310, length.out = length(namez310))
+produc310 <- nameofproduct3b[[3]]
+produc310 <- rep(produc310, length.out = length(namez310))
+cater310 <- category3b[[3]]
+ca310 <- rep(cater310, length.out = length(namez310))
+
+ratingz310 <- ratings3b[[3]]
+    if (length(ratingz310) > length(namez310)) {
+    ratingz310 <- tail(ratingz310, length(namez310)) 
+    } else if (length(ratingz310) < length(namez310)) {
+    ratingz310 <- c(ratingz310, rep(NA, length(namez310) - length(ratingz310)))
+    }
+```
+
+```{r}
+max_length <- max(
+  length(ca310),
+  length(producto310),
+  length(produc310),
+  length(namez310),
+  length(ratingz310),
+  length(dates3b[[3]]),
+  length(title3b[[3]]),
+  length(text3b[[3]])
+)
+
+ca310 <- c(ca310, rep(NA, max_length - length(ca310)))
+producto310 <- c(producto310, rep(NA, max_length - length(producto310)))
+produc310 <- c(produc310, rep(NA, max_length - length(produc310)))
+namez310 <- c(namez310, rep(NA, max_length - length(namez310)))
+ratingz310 <- c(ratingz310, rep(NA, max_length - length(ratingz310)))
+dates3b[[3]] <- c(dates3b[[3]], rep(NA, max_length - length(dates3b[[3]])))
+title3b[[3]] <- c(title3b[[3]], rep(NA, max_length - length(title3b[[3]])))
+text3b[[3]] <- c(text3b[[3]], rep(NA, max_length - length(text3b[[3]])))
+
+paint10 <- data.frame(Category = ca310,
+                     Product_number = producto310,
+                      Name_of_Product = produc310,
+                      Userame = namez310,
+                       Rating = ratingz310,
+                       Date = dates3b[[3]],
+                       Title_of_Review = title3b[[3]],
+                       Text_of_Review = text3b[[3]],
+                       stringsAsFactors = FALSE
+                       )
+head(paint10, 50)
+paint10 %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
