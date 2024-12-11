@@ -1,0 +1,808 @@
+---
+title: "Amazon_fourth_category_RULER#group_(Mijares_Compay_Mabalina)"
+author: "Mijares_Compay_Mabalina"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(polite)
+library(kableExtra)
+library(rmarkdown)
+library(httr)
+library(rvest)
+library(dplyr)
+library(stringr)
+library(ggplot2)
+library(knitr)
+```
+
+```{r}
+urls4 <- c('https://www.amazon.com/Architectural-Architect-Triangular-Blueprint-Architecture/dp/B07QPYQHL9/ref=sr_1_5?crid=NEUHL2SR7E8Q&dib=eyJ2IjoiMSJ9.d3jQLgRNc2daewzyZFbVlb1V9E1XiK2vRlDapEO48-8W_Owpj2i11piTQSR30rDtFgxD34VOcPLm-l1B44ezd0zrVJkv-dzQ9t8ceHr8HUtvzoSRqrVRLwNd8Up77G1Q0psQZufoKnmj2OkZD7_SkCa4_Jx5QevES7gj5-Lqn-mRzGJgX9_YKjfYMrfiK8XCPaIfK69cgVtr3NSU6QYxpqkkL1r1x98ug-FtpHP0mlFPqStI-kBfmRQABpYMp71Lichjnnsqoz_eQY3foGqm3EP5mQ3e1bkn9_O7j4DC2oI.Bzw46FZvG94pRihchy9eWc0V8AimoTtzndg9ywNSeoI&dib_tag=se&keywords=Rena+Chris+Architectural+Scale+Ruler%2C+12%22+Aluminum+Architect+Scale%2C+Triangular+Scale%2C+Scale+Ruler+for+Blueprint%2C+Triangle+Ruler%2C+Drafting+Ruler%2C+Architect+Ruler%2C+Metal+Scale+Ruler%2C+Architecture+Ruler&qid=1733877720&sprefix=rena+chris+architectural+scale+ruler%2C+12+aluminum+architect+scale%2C+triangular+scale%2C+scale+ruler+for+blueprint%2C+triangle+ruler%2C+drafting+ruler%2C+architect+ruler%2C+metal+scale+ruler%2C+architecture+ruler+%2Caps%2C613&sr=8-5',
+           'https://www.amazon.com/YouOKLight-Transparent-Straight-Drafting-Measuring/dp/B0BPX7W2WF/ref=sr_1_5?crid=2VY6SNCI6DAR1&dib=eyJ2IjoiMSJ9.dAUDCwJTE5-s1Z5SwGvKOpOZL5VQ9GAAy9IvawMiORyXGj94rj0BofBKN7Yf7foY3YQo_ol_ywVIGLU3giU60ar7FlDput3ykmkdO2BajISSLKyXQsQEqLijq5R-m4sJnBtKMZ8ZQa3-1M1It6AdgXn7qw8H0S3uabSs3ovuNlvNOLEZQqBmJ19L4EyL4VyZREsCwWYnBsWHG4Zx032xrjTBsUTPV_h_Peq3BU0HqsbbFPEf7Rkpd8Z9rNfL6aELqFVejOWlLyaOLH2XEgAGekXEmDtA3ooaXL9x9yJ1CYI.XJAfi9cpnX7n4Nblipumiozs0wqdmY9pucbJiNHugS8&dib_tag=se&keywords=YouOKLight+Plastic+Ruler+30cm%2C+Clear+Ruler%2CTransparent+Ruler+12+inch%2CMetric+Ruler%2CRuler+30cm+for+School%2CTransparent+Straight+rulers+for+Kids%2Cand+Office+use%2CDrafting+Tools%2CMeasuring+Tools%2CPack+of+2.&qid=1733877754&sprefix=youoklight+plastic+ruler+30cm%2C+clear+ruler%2Ctransparent+ruler+12+inch%2Cmetric+ruler%2Cruler+30cm+for+school%2Ctransparent+straight+rulers+for+kids%2Cand+office+use%2Cdrafting+tools%2Cmeasuring+tools%2Cpack+of+2.+%2Caps%2C294&sr=8-5',
+           'https://www.amazon.com/Architectural-Measurements-Laser-Etched-Triangular-Architects/dp/B07P5Q6835/ref=sr_1_1?crid=16CJ76N17HRT9&dib=eyJ2IjoiMSJ9.4vVL8Kth-5Q33ublu_ZHCp0OaGvnoNvV4329MLZVTAD8pD_AHLu63Zpdi8jqfIQwgY_dHylntgzF1GS5Qjqd-Ilxl6Arbu2eH93wWwotIDvEPF-EQoXeQfcSUtJfTvolbVgvfWfqWUdNDpSzZnf3O4xtPfWPwD7LMYRSA_UffoTswyNKFMR3zUvg48sRN_fPPSkH3IoojZMcf0eWMOxJeBd9CkzOYFisdh2ZveuHPNQ4cdvkNXp35JTH0Rd5NM8fEyKLWwQjLMJ4l0pzJaV8gn5GYpAgdkZs1v1DcF5-g5M._hSLpuDSaprndqmv90GOkWax6fot6sW3U1uGFKWOgwc&dib_tag=se&keywords=Architectural+Scale+Ruler%2C+Imperial+Measurements+12%27%27%2C+Laser-Etched+Aluminum+Architect+Triangular+Ruler+Black+for+Architects%2C+Students%2C+Draftsman%2C+and+Engineers+by+mveohos&qid=1733877781&sprefix=architectural+scale+ruler%2C+imperial+measurements+12%27%27%2C+laser-etched+aluminum+architect+triangular+ruler+black+for+architects%2C+students%2C+draftsman%2C+and+engineers+by+mveohos+%2Caps%2C287&sr=8-1', 
+           'https://www.amazon.com/Westcott-Clear-Flexible-Acrylic-Metric/dp/B004E3NK92/ref=sr_1_1?crid=2VDPAQMXYDORI&dib=eyJ2IjoiMSJ9.8x81MR7nHgcaPLEZJ74kOK-2FLVSC11b7o1NvUIoEuYoLK6V0_3BwqBicTofvOwRPlGMT3xCl-68ga_Quvqrw2qOQN_MXwVTgmtlym7quiBRH0dmx9MZvbs2CUa2sG6VTNVli3t347dHrkQPH1R_pqrFL2ugKpbx6LF262pAHIw62IqMjPw9mUT5JGWPpMsE9W17IEEbT-VIS3vDaaHY_iQiWyLh3lV2lbQhWubibuCvORtau4ssb5YZj4SV7tlArhQwsrVjauSpUr1Vf_A9bejxd13b1Wz6snSg-J38YRA.zyega-xOvm68ozg7xKVUGMbCuMXUZCVcC8Sd9QssWPw&dib_tag=se&keywords=Westcott+10562+Acrylic+Clear+Ruler%2C+12+In&qid=1733877808&sprefix=westcott+10562+acrylic+clear+ruler%2C+12+in%2Caps%2C293&sr=8-1', 
+           'https://www.amazon.com/Color-Transparent-Ruler-Plastic-Rulers/dp/B09S9X3HV7/ref=sr_1_5?crid=1LUWA329T6WFN&dib=eyJ2IjoiMSJ9.W61y6Q3rsgYYJsgVmHPSdN-K7sn6Gp8vvExXN1cEVoY6W7n2QZWZu1b5BmproV3rPvKWgRJFwRSvITwDE5QQpW27aN9n74s9uq2wny_rB7afp_B67Pu_4DiR_5JiVc3-wXOAo_H923-0I4gRl0blXrgqs_aGyxBI1v1CNXi1gAnhYnTLaGXeSvu5N_6AWvZF0LOu95KUuX3E4SyJtWPnLcljyqL1PbLTm-9sxvTCBLQIZugRj_nnPA4D7becBGGmF66VgI1qHkXQdViwB2_6pyqpgLV1cz6yjIMpFf6f3Ls.3jXMFgP-Ij-mqKAjN567UD7pjPMaLYn8JyNGv5yVkxM&dib_tag=se&keywords=Color+Transparent+Ruler+Plastic+Rulers+-+Ruler+12+inch%2C+K&qid=1733877852&sprefix=color+transparent+ruler+plastic+rulers+-+ruler+12+inch%2C+k%2Caps%2C300&sr=8-5')
+
+nameofproduct4 <-vector("list", length(urls4))
+names4 <- vector("list", length(urls4))
+ratings4 <- vector("list", length(urls4))
+dates4 <- vector("list", length(urls4))
+title4 <- vector("list", length(urls4))
+text4 <- vector("list", length(urls4))
+n4 <- vector("list", length(urls4))
+```
+
+```{r}
+df <- list()
+
+for (i in seq_along(urls4)) {
+    session <- bow(urls4[i], user_agent = "Educational")
+
+  webpage4 <- scrape(session)
+
+  nam4 <-webpage4 %>% html_nodes(".a-profile-name") %>% html_text()
+  nam4 <- nam4[!grepl("hair care routine for BROKEN DAMAGED hair|Amazon Customer", nam4, ignore.case = TRUE)]
+    nam4 <- nam4[nam4 != ""]
+    n4[[i]] <- nam4
+    name4 <- c() 
+    non_amazon_seen4 <- FALSE  
+    for (na4 in nam4) {
+      if (na4 == "Amazon Customer") {
+
+        if (non_amazon_seen4) {
+          name4 <- c(name4, na4)
+        }
+      } else {
+        name4 <- c(name4, na4)
+        non_amazon_seen4 <- TRUE
+        }
+    }
+    name4 <- name4[!duplicated(name4) | name4 == "Amazon Customer"]
+    names4[[i]] <- name4
+    
+        nameofproduct4[[i]] <-  webpage4 %>%
+  html_nodes('.a-size-large.product-title-word-break') %>%
+  html_text()
+    nameofproduct4[[i]] <- rep(nameofproduct4[[i]], length.out = length(names4[[i]]))
+    
+    rate4 <- webpage4 %>% html_nodes(".a-icon-alt") %>% html_text()
+    rati4 <- rate4[!grepl("Previous page of related Sponsored Products|Next page of related Sponsored Products|Previous page|Next page", rate4, ignore.case = TRUE)]
+    rat4 <- gsub(" out of 5 stars", "", rati4)
+    rats4 <- rat4
+    if (length(rats4) > length(name4)) {
+    rats4 <- tail(rats4, length(name4)) 
+    } else if (length(rats4) < length(name4)) {
+    rats4 <- c(rats4, rep(NA, length(name4) - length(rats4)))
+    }
+
+    ratings4[[i]] <- rats4
+    
+    dat4 <- webpage4 %>% html_nodes(".a-size-base.a-color-secondary.review-date") %>% html_text()
+    date4 <- gsub("Reviewed.*on ", "", dat4)
+    dates4[[i]] <- date4
+
+    titl4 <- webpage4 %>% html_nodes(".a-size-base.review-title.a-color-base.review-title-content.a-text-bold") %>% html_text()
+    tit4 <- gsub("Reviewed.*on ", "", titl4)
+    ti4 <- gsub(".*stars\\s*", "", tit4)
+    t4 <- gsub("\\s+", " ", ti4)
+    title4[[i]] <- t4
+
+    tex4 <- webpage4 %>% html_nodes(".a-expander-content.reviewText.review-text-content.a-expander-partial-collapse-content") %>% html_text()
+    te4 <- gsub("\\n", " ", tex4)
+    t4 <- gsub("\\s+", " ", te4)
+    text4[[i]] <- trimws(t4)
+}
+```
+
+```{r}
+cate4 <- c("Category 1: WATCH", "Category 2:CANVAS", "Category 3: RULER", "Category 4: RULER", "Category 5")
+category4 <- vector("list", length(cate4))
+for (i in seq_along(cate4)) {
+    category4[[i]] <- cate4[i]
+}
+```
+
+```{r}
+for (i in seq_along(urls4)) {
+    category4[[i]] <- rep(category4[[i]], length.out = length(names4[[i]]))
+}
+```
+
+```{r}
+productnumbe4 <- c("Product 1", "Product 2", "Product 3", "Product 4", "Product 5")
+productnumber4 <- vector("list", length(productnumbe4))
+for (i in seq_along(productnumbe4)) {
+    productnumber4[[i]] <- productnumbe4[i]
+}
+for (i in seq_along(urls4)) {
+    productnumber4[[i]] <- rep(productnumber4[[i]], length.out = length(names4[[i]]))
+}
+```
+
+```{r}
+nama4 <- names4[[1]]
+namez4 <- nama4[!grepl("Architectural Scale Ruler, 12\" Aluminum Architect Scale", nama4, ignore.case = TRUE)]
+namez4 <- unique(namez4)
+namez4 <- namez4[-1]
+producto4 <- productnumber4[[1]]
+producto4 <- rep(producto4, length.out = length(namez4))
+produc4 <- nameofproduct4[[1]]
+produc4 <- rep(produc4, length.out = length(namez4))
+cater4 <- category4[[4]]
+ca4 <- rep(cater4, length.out = length(namez4))
+
+ratingz4 <- ratings4[[1]]
+    if (length(ratingz4) > length(namez4)) {
+    ratingz4 <- tail(ratingz4, length(namez4)) 
+    } else if (length(ratingz4) < length(namez4)) {
+    ratingz4 <- c(ratingz4, rep(NA, length(namez4) - length(ratingz4)))
+    }
+```
+
+```{r}
+max_length <- max(
+  length(ca4),
+  length(producto4),
+  length(produc4),
+  length(namez4),
+  length(ratingz4),
+  length(dates4[[1]]),
+  length(title4[[1]]),
+  length(text4[[1]])
+)
+
+ca4 <- c(ca4, rep(NA, max_length - length(ca4)))
+producto4 <- c(producto4, rep(NA, max_length - length(producto4)))
+produc4 <- c(produc4, rep(NA, max_length - length(produc4)))
+namez4 <- c(namez4, rep(NA, max_length - length(namez4)))
+ratingz4 <- c(ratingz4, rep(NA, max_length - length(ratingz4)))
+dates4[[1]] <- c(dates4[[1]], rep(NA, max_length - length(dates4[[1]])))
+title4[[1]] <- c(title4[[1]], rep(NA, max_length - length(title4[[1]])))
+text4[[1]] <- c(text4[[1]], rep(NA, max_length - length(text4[[1]])))
+
+ruler1 <- data.frame(Category = ca4,
+                     Product_number = producto4,
+                      Name_of_Product = produc4,
+                      Userame = namez4,
+                       Rating = ratingz4,
+                       Date = dates4[[1]],
+                       Title_of_Review = title4[[1]],
+                       Text_of_Review = text4[[1]],
+                       stringsAsFactors = FALSE
+                       )
+head(ruler1, 50)
+
+ruler1 %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+
+```{r}
+nama42 <- names4[[2]]
+namez42 <- nama42[!grepl("YK0132-6 Plastic Ruler 30cm,Transparent Ruler 12 inch video", nama42, ignore.case = TRUE)]
+namez42 <- unique(namez42)
+namez42 <- namez42[-(2:2)]
+producto42 <- productnumber4[[2]]
+producto42 <- rep(producto42, length.out = length(namez42))
+produc42 <- nameofproduct4[[2]]
+produc42 <- rep(produc42, length.out = length(namez42))
+cater42 <- category4[[4]]
+ca42 <- rep(cater42, length.out = length(namez42))
+
+ratingz42 <- ratings4[[2]]
+    if (length(ratingz42) > length(namez42)) {
+    ratingz42 <- tail(ratingz42, length(namez42)) 
+    } else if (length(ratingz42) < length(namez42)) {
+    ratingz42 <- c(ratingz42, rep(NA, length(namez42) - length(ratingz42)))
+    }
+```
+
+
+```{r}
+max_length <- max(
+  length(ca42),
+  length(producto42),
+  length(produc42),
+  length(namez42),
+  length(ratingz42),
+  length(dates4[[2]]),
+  length(title4[[2]]),
+  length(text4[[2]])
+)
+
+ca42 <- c(ca42, rep(NA, max_length - length(ca42)))
+producto42 <- c(producto42, rep(NA, max_length - length(producto42)))
+produc42 <- c(produc42, rep(NA, max_length - length(produc42)))
+namez42 <- c(namez42, rep(NA, max_length - length(namez42)))
+ratingz42 <- c(ratingz42, rep(NA, max_length - length(ratingz42)))
+dates4[[2]] <- c(dates4[[2]], rep(NA, max_length - length(dates4[[2]])))
+title4[[2]] <- c(title4[[2]], rep(NA, max_length - length(title4[[2]])))
+text4[[2]] <- c(text4[[2]], rep(NA, max_length - length(text4[[2]])))
+
+ruler2 <- data.frame(Category = ca42,
+                     Product_number = producto42,
+                      Name_of_Product = produc42,
+                      Userame = namez42,
+                       Rating = ratingz42,
+                       Date = dates4[[2]],
+                       Title_of_Review = title4[[2]],
+                       Text_of_Review = text4[[2]],
+                       stringsAsFactors = FALSE
+                       )
+head(ruler2, 50)
+ruler2 %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+```{r}
+nama43 <- names4[[3]]
+namez43 <- nama43[!grepl("Architectural Scale Ruler, Imperial Measurements 12", nama43, ignore.case = TRUE)]
+namez43 <- namez43[-(1:2)]
+namez43 <- unique(namez43)
+producto43 <- productnumber4[[3]]
+producto43 <- rep(producto43, length.out = length(namez43))
+produc43 <- nameofproduct4[[3]]
+produc43 <- rep(produc43, length.out = length(namez43))
+cater43 <- category4[[4]]
+ca43 <- rep(cater43, length.out = length(namez43))
+
+ratingz43 <- ratings4[[3]]
+    if (length(ratingz43) > length(namez43)) {
+    ratingz43 <- tail(ratingz43, length(namez43)) 
+    } else if (length(ratingz43) < length(namez43)) {
+    ratingz43 <- c(ratingz43, rep(NA, length(namez43) - length(ratingz43)))
+    }
+```
+
+```{r}
+max_length <- max(
+  length(ca43),
+  length(producto43),
+  length(produc43),
+  length(namez43),
+  length(ratingz43),
+  length(dates4[[3]]),
+  length(title4[[3]]),
+  length(text4[[3]])
+)
+
+ca43 <- c(ca43, rep(NA, max_length - length(ca43)))
+producto43 <- c(producto43, rep(NA, max_length - length(producto43)))
+produc43 <- c(produc43, rep(NA, max_length - length(produc43)))
+namez43 <- c(namez43, rep(NA, max_length - length(namez43)))
+ratingz43 <- c(ratingz43, rep(NA, max_length - length(ratingz43)))
+dates4[[3]] <- c(dates4[[3]], rep(NA, max_length - length(dates4[[3]])))
+title4[[3]] <- c(title4[[3]], rep(NA, max_length - length(title4[[3]])))
+text4[[3]] <- c(text4[[3]], rep(NA, max_length - length(text4[[3]])))
+
+ruler3 <- data.frame(Category = ca43,
+                     Product_number = producto43,
+                     Name_of_Product = produc43,
+                     Userame = namez43,
+                     Rating = ratingz43,
+                     Date = dates4[[3]],
+                     Title_of_Review = title4[[3]],
+                     Text_of_Review = text4[[3]],
+                     stringsAsFactors = FALSE
+)
+
+head(ruler3, 50)
+ruler3 %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+
+```{r}
+nama44 <- names4[[4]]
+nama44
+namez44 <- nama44[!grepl("Westcott Office Supplies, Drawing and Crafting Tools", nama44, ignore.case = TRUE)]
+namez44 <- namez44[-(1:2)]
+namez44 <- unique(namez44)
+producto44 <- productnumber4[[4]]
+producto44 <- rep(producto44, length.out = length(namez44))
+produc44 <- nameofproduct4[[4]]
+produc44 <- rep(produc44, length.out = length(namez44))
+cater44 <- category4[[4]]
+ca44 <- rep(cater44, length.out = length(namez44))
+
+ratingz44 <- ratings4[[4]]
+    if (length(ratingz44) > length(namez44)) {
+    ratingz44 <- tail(ratingz44, length(namez44)) 
+    } else if (length(ratingz44) < length(namez44)) {
+    ratingz44 <- c(ratingz44, rep(NA, length(namez44) - length(ratingz44)))
+    }
+```
+
+
+```{r}
+max_length <- max(
+  length(ca44),
+  length(producto44),
+  length(produc44),
+  length(namez44),
+  length(ratingz44),
+  length(dates4[[4]]),
+  length(title4[[4]]),
+  length(text4[[4]])
+)
+
+ca44 <- c(ca44, rep(NA, max_length - length(ca44)))
+producto44 <- c(producto44, rep(NA, max_length - length(producto44)))
+produc44 <- c(produc44, rep(NA, max_length - length(produc44)))
+namez44 <- c(namez44, rep(NA, max_length - length(namez44)))
+ratingz44 <- c(ratingz44, rep(NA, max_length - length(ratingz44)))
+dates4[[4]] <- c(dates4[[4]], rep(NA, max_length - length(dates4[[4]])))
+title4[[4]] <- c(title4[[4]], rep(NA, max_length - length(title4[[4]])))
+text4[[4]] <- c(text4[[4]], rep(NA, max_length - length(text4[[4]])))
+
+ruler4 <- data.frame(Category = ca44,
+                     Product_number = producto44,
+                      Name_of_Product = produc44,
+                      Userame = namez44,
+                       Rating = ratingz44,
+                       Date = dates4[[4]],
+                       Title_of_Review = title4[[4]],
+                       Text_of_Review = text4[[4]],
+                       stringsAsFactors = FALSE
+                       )
+head(ruler4, 50)
+ruler4 %>%
+  kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+
+```{r}
+nama45 <- names4[[5]]
+nama45
+namez45 <- nama45[!grepl("Honest Review of Clear Rulers", nama45, ignore.case = TRUE)]
+namez45 <- namez45[-(1:2)]
+namez45 <- unique(namez45)
+producto45 <- productnumber4[[5]]
+producto45 <- rep(producto45, length.out = length(namez45))
+produc45 <- nameofproduct4[[5]]
+produc45 <- rep(produc45, length.out = length(namez45))
+cater45 <- category4[[4]]
+ca45 <- rep(cater45, length.out = length(namez45))
+
+ratingz45 <- ratings4[[5]]
+    if (length(ratingz45) > length(namez45)) {
+    ratingz45 <- tail(ratingz45, length(namez45)) 
+    } else if (length(ratingz45) < length(namez45)) {
+    ratingz45 <- c(ratingz45, rep(NA, length(namez45) - length(ratingz45)))
+    }
+```
+
+
+```{r}
+max_length <- max(
+  length(ca45),
+  length(producto45),
+  length(produc45),
+  length(namez45),
+  length(ratingz45),
+  length(dates4[[5]]),
+  length(title4[[5]]),
+  length(text4[[5]])
+)
+
+ca45 <- c(ca45, rep(NA, max_length - length(ca45)))
+producto45 <- c(producto45, rep(NA, max_length - length(producto45)))
+produc45 <- c(produc45, rep(NA, max_length - length(produc45)))
+namez45 <- c(namez45, rep(NA, max_length - length(namez45)))
+ratingz45 <- c(ratingz45, rep(NA, max_length - length(ratingz45)))
+dates4[[5]] <- c(dates4[[5]], rep(NA, max_length - length(dates4[[5]])))
+title4[[5]] <- c(title4[[5]], rep(NA, max_length - length(title4[[5]])))
+text4[[5]] <- c(text4[[5]], rep(NA, max_length - length(text4[[5]])))
+
+ruler5 <- data.frame(Category = ca45,
+                     Product_number = producto45,
+                      Name_of_Product = produc45,
+                      Userame = namez45,
+                       Rating = ratingz45,
+                       Date = dates4[[5]],
+                       Title_of_Review = title4[[5]],
+                       Text_of_Review = text4[[5]],
+                       stringsAsFactors = FALSE
+                       )
+head(ruler5, 50)
+ruler5 %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+
+```{r}
+urls4b <- c('https://www.amazon.com/Mr-Stainless-Centimeters-Drawing-Measuring/dp/B07DP25SRG/ref=sr_1_5?crid=XSKW7S4VCX44&dib=eyJ2IjoiMSJ9.ET7DRjXjA_f3twcGCwULsr5IK5Pwz4AuJXTJQ22wEqvcQSj1fhyUhIbVHBqNlm0fcF0X32OvPKslilst5uSkyE5cr1lWXiY7gSvLdpyhRfzcnWEMeCzizuo6O_g-rT9CZErgY_KTqtQMFJAg3_sUIUofiqy_yEkYvXJ7ffwKRxp33nhbQ-eqrlZlT9v_r1sOIhcF6Tp6iqKU4P4cXK2IksVjZKRNQXIg2IN5oqpXK7siEd76mciFf660Bt1FPQA5MAC8riVhMOqBXE5FRiTUNlqlw9UXA35nJLsiylL0WeY.n3v5eLdUfBriRtPuwQNhPX27y7Eu2ButC2qCSireURo&dib_tag=se&keywords=r.+Pen+Steel+Rulers%2C+6%2C+8%2C+12%2C+14+inch+Metal+Rulers%2C+Pack+of+4&qid=1733879103&sprefix=color+transparent+ruler+plastic+rulers+-+ruler+12+inch%2C+k%2Caps%2C882&sr=8-5',
+            'https://www.amazon.com/YouOKLight-Transparent-Straight-Drafting-Measuring/dp/B0BPX7W2WF/ref=sr_1_5?crid=23830K22PEWJQ&dib=eyJ2IjoiMSJ9.dAUDCwJTE5-s1Z5SwGvKOpOZL5VQ9GAAy9IvawMiORyXGj94rj0BofBKN7Yf7foY3YQo_ol_ywVIGLU3giU60aouTODgDyGADZ_ADwovQ9urRFpEB9WLegUpKz_nifr_nBtKMZ8ZQa3-1M1It6AdgXn7qw8H0S3uabSs3ovuNlvNOLEZQqBmJ19L4EyL4VyZREsCwWYnBsWHG4Zx032xri8i0HKb28MqXbIG1zxBl0p5yjcaCqVR8NfAeeBgjqA1d5igjopr9aKEyj4SQq3moUXEmDtA3ooaXL9x9yJ1CYI.40IUKbRkgFpjHVWai1tpYxNbUW9Z_OpePCPFnM2tdP4&dib_tag=se&keywords=YouOKLight+Plastic+Ruler+30cm%2C+Clear+Ruler%2CTransparent+Ruler+12+inch%2CMetric+Ruler%2CRuler+30cm+for+School%2CTransparent+Straight+rulers+for+Kids%2Cand+Office+use%2CDrafting+Tools%2CMeasuring+Tools%2CPack+of+2.&qid=1733879192&sprefix=youoklight+plastic+ruler+30cm%2C+clear+ruler%2Ctransparent+ruler+12+inch%2Cmetric+ruler%2Cruler+30cm+for+school%2Ctransparent+straight+rulers+for+kids%2Cand+office+use%2Cdrafting+tools%2Cmeasuring+tools%2Cpack+of+2.+%2Caps%2C285&sr=8-5',
+            'https://www.amazon.com/Stainless-Flexible-Centimeters-Precision-Measuring/dp/B0BP99DRKC/ref=sr_1_5?crid=363VJEE2Y6SMY&dib=eyJ2IjoiMSJ9.0MogTYMoNFOj7GCb-Nuips9qnJO-1Dn8lqYxUVHJ-KzvTAKrro_aEAbiL59WrJq7LgovtrXXirCLLNoqOholPaQ0o7qi2xNI5Vv1DnJYtb6h81VMphPZ-sPRutfvurWON12Yg1X7Pa689-p2YECy30mxIBxx5uWfAs5iCEm2K0_hr3JTlO0BNMgu3JXmBcSx8en-2TL3XPDQPMfaWLbl9DsbJ4VUos4HDiXsD9Ibjp6ZW9eOCTUHcvl6RQiP9c_AszeWnIjtzTiwPELNsvvyDmvU_S4WLR20pyTTqxHdY4c.xnR111Mfi8hLoiTZnR-X79jyMoHbGorR2Lp5rRGJtBA&dib_tag=se&keywords=Stainless+Steel+Ruler+Set%2C+Flexible+Metal+Ruler+12+Inch.+Ru&qid=1733879262&sprefix=stainless+steel+ruler+set%2C+flexible+metal+ruler+12+inch.+ru%2Caps%2C289&sr=8-5',
+            'https://www.amazon.com/Architectural-Engineering-Laser-Etched-Triangular-Blueprints/dp/B08BNQVY6X/ref=sr_1_5?crid=4MCGPPRTPNB0&dib=eyJ2IjoiMSJ9.K3951QiFX5Gr4yJiRgLFeuA48x08wW7hCH6zw7SKz8QEk63ah8bORDlDV62ng9TkCiHtk9F54jFe3NlNw8tumGocsYPl3fDpfCjEO_GRSDjEPF-EQoXeQfcSUtJfTvolurONnQYoqlUOLFDN-k6jla0H92IYT-XKIy-ZyBeGMz8al0F4oOXcXPAleDPs-o9pwUviMCggNDiR-43iyBXSbe3FVVkO89bVbauFoXldRs22BgWIEpzJWkSrrP9vdMXjiLqPYvorFXBnWJLtl14CrvPSZmjoxs3SupFPPylQ_Go.49LdvgjEB0hPcyWLXJBIVU5SVaJHE2PWkwBsA6lpndA&dib_tag=se&keywords=12-Inch+Architectural+and+Engineering+Scale+Ruler+Set+%28Imperial%29+%7C+Laser-Etched+Aluminum+Triangular+Drafting+Tool+%7C+for+Architect+and+Civil+Engineer+Blueprints+%7C+Standard+Metal+Ruler+Included&qid=1733879302&sprefix=12-inch+architectural+and+engineering+scale+ruler+set+imperial+laser-etched+aluminum+triangular+drafting+tool+for+architect+and+civil+engineer+blueprints+standard+metal+ruler+included%2Caps%2C294&sr=8-5',
+            'https://www.amazon.com/Westcott-School-Ruler-Scaled-103810/dp/B005H3PG5O/ref=sr_1_1?crid=38Q1CMXF8CDA8&dib=eyJ2IjoiMSJ9.BANst-BnN4GXUxhdLWfu5wU6JbV7Q5250wLEoH1kBx4G6VasPtjYnXKCFkZWzdk40odWEP7pCPAFad8800Xn1O2xmxlZ7AvN2gCHPACZJhTDtAiE-EM5dby1nVyHtERgNSbW8rZTGs-pDgjGpMAKb82gyM1Fgy_frdbj1o690RCvFK8m2npPCA43lUzPS-ZANJYDCdFz5EJ84URcCDl_yk8G-Cv2KQ72kUxXGnMUB9jc_c7EC9DTCeETsElkLllcI3vSFl_aQokyNjFSS1My2zU3ngSuA283p74Jw3ygdec.Nfc1VKBwn3fssVL89tM33VahWnilYbY7c9iq8EygOJA&dib_tag=se&keywords=Westcott+10381+Wooden+Ruler%2C+12+Inch%2C+Assorted+Colors&qid=1733879323&sprefix=westcott+10381+wooden+ruler%2C+12+inch%2C+assorted+colors%2Caps%2C303&sr=8-1')
+
+nameofproduct4b <-vector("list", length(urls4b))
+names4b <- vector("list", length(urls4b))
+ratings4b <- vector("list", length(urls4b))
+dates4b <- vector("list", length(urls4b))
+title4b <- vector("list", length(urls4b))
+text4b <- vector("list", length(urls4b))
+n4b <- vector("list", length(urls4b))
+```
+
+```{r}
+df <- list()
+
+for (i in seq_along(urls4b)) {
+    session <- bow(urls4b[i], user_agent = "Educational")
+
+  webpage4b <- scrape(session)
+
+  nam4b <-webpage4b %>% html_nodes(".a-profile-name") %>% html_text()
+  nam4b <- nam4b[!grepl("hair care routine for BROKEN DAMAGED hair|Amazon Customer", nam4b, ignore.case = TRUE)]
+    nam4b <- nam4b[nam4b != ""]
+    n4b[[i]] <- nam4b
+    name4b <- c() 
+    non_amazon_seen4b <- FALSE  
+    for (na4b in nam4b) {
+      if (na4b == "Amazon Customer") {
+
+        if (non_amazon_seen4b) {
+          name4b <- c(name4b, na4b)
+        }
+      } else {
+        name4b <- c(name4b, na4b)
+        non_amazon_seen4b <- TRUE
+        }
+    }
+    name4b <- name4b[!duplicated(name4b) | name4b == "Amazon Customer"]
+    names4b[[i]] <- name4b
+    
+        nameofproduct4b[[i]] <-  webpage4b %>%
+  html_nodes('.a-size-large.product-title-word-break') %>%
+  html_text()
+    nameofproduct4b[[i]] <- rep(nameofproduct4b[[i]], length.out = length(names4b[[i]]))
+    
+    rate4b <- webpage4b %>% html_nodes(".a-icon-alt") %>% html_text()
+    rati4b <- rate4b[!grepl("hair care routine for BROKEN DAMAGED hair|Amazon Customer", rate4b, ignore.case = TRUE)]
+    rat4b <- gsub(" out of 5 stars", "", rati4b)
+    rats4b <- rat4b
+    if (length(rats4b) > length(name4b)) {
+    rats4b <- tail(rats4b, length(name4b)) 
+    } else if (length(rats4b) < length(name4b)) {
+    rats4b <- c(rats4b, rep(NA, length(name4b) - length(rats4b)))
+    }
+
+    ratings4b[[i]] <- rats4b
+    
+    dat4b <- webpage4b %>% html_nodes(".a-size-base.a-color-secondary.review-date") %>% html_text()
+    date4b <- gsub("Reviewed.*on ", "", dat4b)
+    dates4b[[i]] <- date4b
+
+    titl4b <- webpage4b %>% html_nodes(".a-size-base.review-title.a-color-base.review-title-content.a-text-bold") %>% html_text()
+    tit4b <- gsub("Reviewed.*on ", "", titl4b)
+    ti4b <- gsub(".*stars\\s*", "", tit4b)
+    t4b <- gsub("\\s+", " ", ti4b)
+    title4b[[i]] <- t4b
+
+    tex4b <- webpage4b %>% html_nodes(".a-expander-content.reviewText.review-text-content.a-expander-partial-collapse-content") %>% html_text()
+    te4b <- gsub("\\n", " ", tex4b)
+    t4b <- gsub("\\s+", " ", te4b)
+    text4b[[i]] <- trimws(t4b)
+}
+```
+
+
+```{r}
+cate4b <- c("Category 1: WATCH", "Category 2: CANVAS", "Category 3: PAINT", "Category 4: RULER", "Category 5")
+category4b <- vector("list", length(cate4b))
+for (i in seq_along(cate4b)) {
+    category4b[[i]] <- cate4b[i]
+}
+```
+
+```{r}
+for (i in seq_along(urls4b)) {
+    category4b[[i]] <- rep(category4b[[i]], length.out = length(names4b[[i]]))
+}
+```
+
+```{r}
+productnumbe4b <- c("Product 6", "Product 7", "Product 8", "Product 9", "Product 10")
+productnumber4b <- vector("list", length(productnumbe4b))
+for (i in seq_along(productnumbe4b)) {
+    productnumber4b[[i]] <- productnumbe4b[i]
+}
+for (i in seq_along(urls4b)) {
+    productnumber4b[[i]] <- rep(productnumber4b[[i]], length.out = length(names4b[[i]]))
+}
+```
+
+```{r}
+nama4b <- names4b[[1]]
+nama4b
+namez4b <- nama4b[!grepl("Mr. Pen steel Ruler|Amazon Customer", nama4b, ignore.case = TRUE)]
+namez4b <- unique(namez4b)
+namez4b <- namez4b[-1]
+producto4b <- productnumber4b[[1]]
+producto4b <- rep(producto4b, length.out = length(namez4b))
+produc4b <- nameofproduct4b[[1]]
+produc4b <- rep(produc4b, length.out = length(namez4b))
+cater4b <- category4b[[4]]
+ca4b <- rep(cater4b, length.out = length(namez4b))
+
+ratingz4b <- ratings4b[[1]]
+    if (length(ratingz4b) > length(namez4b)) {
+    ratingz4b <- tail(ratingz4b, length(namez4b)) 
+    } else if (length(ratingz4b) < length(namez4b)) {
+    ratingz4b <- c(ratingz4b, rep(NA, length(namez4b) - length(ratingz4b)))
+    }
+```
+
+```{r}
+max_length <- max(
+  length(ca4b),
+  length(producto4b),
+  length(produc4b),
+  length(namez4b),
+  length(ratingz4b),
+  length(dates4b[[1]]),
+  length(title4b[[1]]),
+  length(text4b[[1]])
+)
+
+ca4b <- c(ca4b, rep(NA, max_length - length(ca4b)))
+producto4b <- c(producto4b, rep(NA, max_length - length(producto4b)))
+produc4b <- c(produc4b, rep(NA, max_length - length(produc4b)))
+namez4b <- c(namez4b, rep(NA, max_length - length(namez4b)))
+ratingz4b <- c(ratingz4b, rep(NA, max_length - length(ratingz4b)))
+dates4b[[1]] <- c(dates4b[[1]], rep(NA, max_length - length(dates4b[[1]])))
+title4b[[1]] <- c(title4b[[1]], rep(NA, max_length - length(title4b[[1]])))
+text4b[[1]] <- c(text4b[[1]], rep(NA, max_length - length(text4b[[1]])))
+
+ruler6 <- data.frame(Category = ca4b,
+                     Product_number = producto4b,
+                      Name_of_Product = produc4b,
+                      Userame = namez4b,
+                       Rating = ratingz4b,
+                       Date = dates4b[[1]],
+                       Title_of_Review = title4b[[1]],
+                       Text_of_Review = text4b[[1]],
+                       stringsAsFactors = FALSE
+                       )
+head(ruler6, 50)
+ruler6 %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+
+```{r}
+nama4b2 <- names4b[[2]]
+namez4b2 <- nama4b2[!grepl("YK0132-6 Plastic Ruler 30cm,Transparent Ruler 12 inch video|Amazon Customer", nama4b2, ignore.case = TRUE)]
+namez4b2 <- unique(namez4b2)
+namez4b2 <- namez4b2[-(2:2)]
+producto4b2 <- productnumber4b[[2]]
+producto4b2 <- rep(producto4b2, length.out = length(namez4b2))
+produc4b2 <- nameofproduct4b[[2]]
+produc4b2 <- rep(produc4b2, length.out = length(namez4b2))
+cater4b2 <- category4b[[4]]
+ca4b2 <- rep(cater4b2, length.out = length(namez4b2))
+
+ratingz4b2 <- ratings4b[[2]]
+    if (length(ratingz4b2) > length(namez4b2)) {
+    ratingz4b2 <- tail(ratingz4b2, length(namez4b2)) 
+    } else if (length(ratingz4b2) < length(namez4b2)) {
+    ratingz4b2 <- c(ratingz4b2, rep(NA, length(namez4b2) - length(ratingz4b2)))
+    }
+```
+
+
+```{r}
+max_length <- max(
+  length(ca4b2),
+  length(producto4b2),
+  length(produc4b2),
+  length(namez4b2),
+  length(ratingz4b2),
+  length(dates4b[[2]]),
+  length(title4b[[2]]),
+  length(text4b[[2]])
+)
+
+ca4b2 <- c(ca4b2, rep(NA, max_length - length(ca4b2)))
+producto4b2 <- c(producto4b2, rep(NA, max_length - length(producto4b2)))
+produc4b2 <- c(produc4b2, rep(NA, max_length - length(produc4b2)))
+namez4b2 <- c(namez4b2, rep(NA, max_length - length(namez4b2)))
+ratingz4b2 <- c(ratingz4b2, rep(NA, max_length - length(ratingz4b2)))
+dates4b[[2]] <- c(dates4b[[2]], rep(NA, max_length - length(dates4b[[2]])))
+title4b[[2]] <- c(title4b[[2]], rep(NA, max_length - length(title4b[[2]])))
+text4b[[2]] <- c(text4b[[2]], rep(NA, max_length - length(text4b[[2]])))
+
+ruler7 <- data.frame(Category = ca4b2,
+                     Product_number = producto4b2,
+                      Name_of_Product = produc4b2,
+                      Userame = namez4b2,
+                       Rating = ratingz4b2,
+                       Date = dates4b[[2]],
+                       Title_of_Review = title4b[[2]],
+                       Text_of_Review = text4b[[2]],
+                       stringsAsFactors = FALSE
+                       )
+head(ruler7, 50)
+ruler7 %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+
+```{r}
+nama4b3 <- names4b[[3]]
+namez4b3 <- nama4b3[!grepl("YK0131-6 Stainless Steel Ruler Set, metal ruler 12 inch|Amazon Customer", nama4b3, ignore.case = TRUE)]
+namez4b3 <- namez4b3[-(1:2)]
+namez4b3 <- unique(namez4b3)
+producto4b3 <- productnumber4b[[3]]
+producto4b3 <- rep(producto4b3, length.out = length(namez4b3))
+produc4b3 <- nameofproduct4b[[3]]
+produc4b3 <- rep(produc4b3, length.out = length(namez4b3))
+cater4b3 <- category4b[[4]]
+ca4b3 <- rep(cater4b3, length.out = length(namez4b3))
+
+ratingz4b3 <- ratings4b[[3]]
+    if (length(ratingz4b3) > length(namez4b3)) {
+    ratingz4b3 <- tail(ratingz4b3, length(namez4b3)) 
+    } else if (length(ratingz4b3) < length(namez4b3)) {
+    ratingz4b3 <- c(ratingz4b3, rep(NA, length(namez4b3) - length(ratingz4b3)))
+    }
+```
+
+
+```{r}
+max_length <- max(
+  length(ca4b3),
+  length(producto4b3),
+  length(produc4b3),
+  length(namez4b3),
+  length(ratingz4b3),
+  length(dates4b[[3]]),
+  length(title4b[[3]]),
+  length(text4b[[3]])
+)
+
+ca4b3 <- c(ca4b3, rep(NA, max_length - length(ca4b3)))
+producto4b3 <- c(producto4b3, rep(NA, max_length - length(producto4b3)))
+produc4b3 <- c(produc4b3, rep(NA, max_length - length(produc4b3)))
+namez4b3 <- c(namez4b3, rep(NA, max_length - length(namez4b3)))
+ratingz4b3 <- c(ratingz4b3, rep(NA, max_length - length(ratingz4b3)))
+dates4b[[3]] <- c(dates4b[[3]], rep(NA, max_length - length(dates4b[[3]])))
+title4b[[3]] <- c(title4b[[3]], rep(NA, max_length - length(title4b[[3]])))
+text4b[[3]] <- c(text4b[[3]], rep(NA, max_length - length(text4b[[3]])))
+
+ruler8 <- data.frame(Category = ca4b3,
+                     Product_number = producto4b3,
+                      Name_of_Product = produc4b3,
+                      Userame = namez4b3,
+                       Rating = ratingz4b3,
+                       Date = dates4b[[3]],
+                       Title_of_Review = title4b[[3]],
+                       Text_of_Review = text4b[[3]],
+                       stringsAsFactors = FALSE
+                       )
+head(ruler8, 50)
+ruler8 %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+
+```{r}
+nama4b4 <- names4b[[4]]
+namez4b4 <- nama4b4[!grepl("Amazon Customer", nama4b4, ignore.case = TRUE)]
+namez4b4 <- namez4b4[-(1:2)]
+namez4b4 <- unique(namez4b4)
+producto4b4 <- productnumber4b[[4]]
+producto4b4 <- rep(producto4b4, length.out = length(namez4b4))
+produc4b4 <- nameofproduct4b[[4]]
+produc4b4 <- rep(produc4b4, length.out = length(namez4b4))
+cater4b4 <- category4b[[4]]
+ca4b4 <- rep(cater4b4, length.out = length(namez4b4))
+
+ratingz4b4 <- ratings4b[[4]]
+    if (length(ratingz4b4) > length(namez4b4)) {
+    ratingz4b4 <- tail(ratingz4b4, length(namez4b4)) 
+    } else if (length(ratingz4b4) < length(namez4b4)) {
+    ratingz4b4 <- c(ratingz4b4, rep(NA, length(namez4b4) - length(ratingz4b4)))
+    }
+```
+
+
+```{r}
+max_length <- max(
+  length(ca4b4),
+  length(producto4b4),
+  length(produc4b4),
+  length(namez4b4),
+  length(ratingz4b4),
+  length(dates4b[[4]]),
+  length(title4b[[4]]),
+  length(text4b[[4]])
+)
+
+ca4b4 <- c(ca4b4, rep(NA, max_length - length(ca4b4)))
+producto4b4 <- c(producto4b4, rep(NA, max_length - length(producto4b4)))
+produc4b4 <- c(produc4b4, rep(NA, max_length - length(produc4b4)))
+namez4b4 <- c(namez4b4, rep(NA, max_length - length(namez4b4)))
+ratingz4b4 <- c(ratingz4b4, rep(NA, max_length - length(ratingz4b4)))
+dates4b[[4]] <- c(dates4b[[4]], rep(NA, max_length - length(dates4b[[4]])))
+title4b[[4]] <- c(title4b[[4]], rep(NA, max_length - length(title4b[[4]])))
+text4b[[4]] <- c(text4b[[4]], rep(NA, max_length - length(text4b[[4]])))
+
+ruler9 <- data.frame(Category = ca4b4,
+                     Product_number = producto4b4,
+                      Name_of_Product = produc4b4,
+                      Userame = namez4b4,
+                       Rating = ratingz4b4,
+                       Date = dates4b[[4]],
+                       Title_of_Review = title4b[[4]],
+                       Text_of_Review = text4b[[4]],
+                       stringsAsFactors = FALSE
+                       )
+head(ruler9, 50)
+ruler9 %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+
+```{r}
+nama4b5 <- names4b[[5]]
+nama4b5
+namez4b5 <- nama4b5[!grepl("Amazon Customer|Westcott Office Supplies, Drawing and Crafting Tools", nama4b5, ignore.case = TRUE)]
+namez4b5 <- namez4b5[-(1:2)]
+namez4b5 <- unique(namez4b5)
+producto4b5 <- productnumber4b[[5]]
+producto4b5 <- rep(producto4b5, length.out = length(namez4b5))
+produc4b5 <- nameofproduct4b[[5]]
+produc4b5 <- rep(produc4b5, length.out = length(namez4b5))
+cater4b5 <- category4b[[4]]
+ca4b5 <- rep(cater4b5, length.out = length(namez4b5))
+
+ratingz4b5 <- ratings4b[[5]]
+    if (length(ratingz4b5) > length(namez4b5)) {
+    ratingz4b5 <- tail(ratingz4b5, length(namez4b5)) 
+    } else if (length(ratingz4b5) < length(namez4b5)) {
+    ratingz4b5 <- c(ratingz4b5, rep(NA, length(namez4b5) - length(ratingz4b5)))
+    }
+```
+
+
+```{r}
+max_length <- max(
+  length(ca4b4),
+  length(producto4b4),
+  length(produc4b4),
+  length(namez4b4),
+  length(ratingz4b4),
+  length(dates4b[[4]]),
+  length(title4b[[4]]),
+  length(text4b[[4]])
+)
+
+ca4b4 <- c(ca4b4, rep(NA, max_length - length(ca4b4)))
+producto4b4 <- c(producto4b4, rep(NA, max_length - length(producto4b4)))
+produc4b4 <- c(produc4b4, rep(NA, max_length - length(produc4b4)))
+namez4b4 <- c(namez4b4, rep(NA, max_length - length(namez4b4)))
+ratingz4b4 <- c(ratingz4b4, rep(NA, max_length - length(ratingz4b4)))
+dates4b[[4]] <- c(dates4b[[4]], rep(NA, max_length - length(dates4b[[4]])))
+title4b[[4]] <- c(title4b[[4]], rep(NA, max_length - length(title4b[[4]])))
+text4b[[4]] <- c(text4b[[4]], rep(NA, max_length - length(text4b[[4]])))
+
+ruler10 <- data.frame(Category = ca4b5,
+                     Product_number = producto4b5,
+                      Name_of_Product = produc4b5,
+                      Userame = namez4b5,
+                       Rating = ratingz4b5,
+                       Date = dates4b[[5]],
+                       Title_of_Review = title4b[[5]],
+                       Text_of_Review = text4b[[5]],
+                       stringsAsFactors = FALSE
+                       )
+head(ruler10, 50)
+```
